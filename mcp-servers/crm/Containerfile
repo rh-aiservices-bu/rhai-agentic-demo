@@ -1,0 +1,17 @@
+FROM registry.access.redhat.com/ubi9/nodejs-22-minimal@sha256:99182cbf8b651399f360d85cd48b7ac5fcfe14d49bbc3d48d9e2d1bc035564d2
+
+WORKDIR /opt/app-root/src
+
+
+USER 1001
+
+USER root
+
+RUN chown -R 1001:0 /opt/app-root/src
+
+USER 1001
+COPY --chown=1001:0 package.json ./
+COPY --chown=1001:0 app ./app
+RUN npm install --cache=./npm_cache
+
+CMD npx -y supergateway --stdio "node app/index.js"
