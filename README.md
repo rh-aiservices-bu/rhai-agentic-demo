@@ -69,3 +69,22 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 
 ```
+
+## UI
+
+To run the ui, build it first with podman;
+
+`cd ui`
+
+`podman build -t ui .`
+
+Run the ui connecting to a local instance of Llama Stack on port 5001
+
+`podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui`
+
+## Register PDF MCP
+
+
+curl -X POST -H "Content-Type: application/json" \
+  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::pdf", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8010/sse"}}' \
+  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
