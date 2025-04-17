@@ -52,7 +52,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 install deno with `brew install deno`
 
-Run the sandbox mcp server
+Run the python sandbox mcp server
 
 ```
 deno run \
