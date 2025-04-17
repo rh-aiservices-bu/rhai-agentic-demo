@@ -47,3 +47,25 @@ curl -X POST -H "Content-Type: application/json" \
   --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::crm", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8000/sse"}}' \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
+
+## python sandbox
+
+install deno with `brew install deno`
+
+Run the sandbox mcp server
+
+```
+deno run \
+  -N -R=node_modules -W=node_modules --node-modules-dir=auto \
+  jsr:@pydantic/mcp-run-python sse
+
+```
+
+Register the MCP server
+
+```
+curl -X POST -H "Content-Type: application/json" \
+  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::python", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:3001/sse"}}' \
+  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
+
+```
