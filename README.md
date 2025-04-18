@@ -1,11 +1,15 @@
 # Red Hat Summit Agentic Demo
-
 Agentic AI Demo Repository for the Red Hat Summit 2025 Booth
 
+This is a work-in-progress (WIP) repository, and modifications will be made.
+
+## Setup
+
+### 1. Databases
 
 Start postgres:
 
-```
+```sh
 podman run -it --name postgres \
   -e POSTGRES_USER=claimdb \
   -e POSTGRES_PASSWORD=claimdb \
@@ -15,7 +19,11 @@ podman run -it --name postgres \
   -d postgres
   ```
 
-  Start the MCP CRM service
+## 2. MCP Servers
+
+### 2.1 MCP CRM Service
+
+Start the MCP CRM service
 
 ```sh
 cd mcp-servers/crm
@@ -37,10 +45,11 @@ Run the MCP server using `npx`:
 npx -y supergateway --stdio "node app/index.js"
 ```
 
-## Register the MCP toolgroup
+#### 2.1.1 Register the MCP toolgroup
 
-`export LLAMA_STACK_PORT=5001`
-
+```sh
+export LLAMA_STACK_PORT=5001
+```
 
 ```
 curl -X POST -H "Content-Type: application/json" \
@@ -48,43 +57,55 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
 
-## python sandbox
+### 2.2 MCP Python Sandbox
 
-install deno with `brew install deno`
+Install deno with 
+
+```sh
+brew install deno
+```
 
 Run the python sandbox mcp server
 
-```
+```sh
 deno run \
   -N -R=node_modules -W=node_modules --node-modules-dir=auto \
   jsr:@pydantic/mcp-run-python sse
-
 ```
+
+#### 2.2.2 Register the MCP toolgroup
 
 Register the MCP server
 
-```
+```sh
 curl -X POST -H "Content-Type: application/json" \
   --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::python", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:3001/sse"}}' \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 
 ```
 
+### 2.3 MCP PDF Server
+
+Follow the [setup instructions](./mcp-servers/pdf/README.md) to install MCP PDF Server
+
+#### 2.3.1 Register PDF MCP
+
+```sh
+curl -X POST -H "Content-Type: application/json" \
+  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::pdf", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8010/sse"}}' \
+  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
+```
+
 ## UI
 
 To run the ui, build it first with podman;
 
-`cd ui`
-
-`podman build -t ui .`
+```sh
+podman build -t ui -f ui/Containerfile
+```
 
 Run the ui connecting to a local instance of Llama Stack on port 5001
 
-`podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui`
-
-## Register PDF MCP
-
-
-curl -X POST -H "Content-Type: application/json" \
-  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::pdf", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8010/sse"}}' \
-  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
+```
+podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui
+```
