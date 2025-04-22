@@ -1,9 +1,3 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-#
-# This source code is licensed under the terms described in the LICENSE file in
-# the root directory of this source tree.
-
 import uuid
 
 import streamlit as st
@@ -11,9 +5,28 @@ from llama_stack_client import Agent
 
 from llama_stack.distribution.ui.modules.api import llama_stack_api
 
+def account_analysis_page():
+    # Inject CSS styles for theme and layout
+    st.markdown("""
+        <style>
+            .main {
+                background-color: #d0d7dd;
+            }
+            .block-container {
+                padding-top: 2rem;
+            }
+            header {visibility: hidden;}
+            footer {visibility: hidden;}
+            .reportview-container .markdown-text-container {
+                font-family: 'Segoe UI', sans-serif;
+                color: #1e2a38;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
-def tool_chat_page():
-    st.title("🛠 Tools")
+
+
+    st.title("ParasolCloud: Account Insights Tool")
 
     client = llama_stack_api.client
     models = client.models.list()
@@ -29,28 +42,28 @@ def tool_chat_page():
         st.cache_resource.clear()
 
     with st.sidebar:
-        st.subheader("Model")
-        model = st.selectbox(label="models", options=model_list, on_change=reset_agent)
+        st.subheader("Model Selection")
+        model = st.selectbox(label="LLM Models", options=model_list, on_change=reset_agent)
 
-        st.subheader("Builtin Tools")
+        st.subheader("Select ToolGroups")
         toolgroup_selection = st.pills(
-            label="Available ToolGroups", options=builtin_tools_list, selection_mode="multi", on_change=reset_agent
+            label="Internal Tools", options=builtin_tools_list, selection_mode="multi", on_change=reset_agent
         )
 
         if "builtin::rag" in toolgroup_selection:
             vector_dbs = llama_stack_api.client.vector_dbs.list() or []
             if not vector_dbs:
-                st.info("No vector databases available for selection.")
+                st.info("No vector databases found.")
             vector_dbs = [vector_db.identifier for vector_db in vector_dbs]
             selected_vector_dbs = st.multiselect(
-                label="Select Document Collections to use in RAG queries",
+                label="Select Knowledge Sources for RAG",
                 options=vector_dbs,
                 on_change=reset_agent,
             )
 
-        st.subheader("MCP Servers")
+        st.subheader("MCP Integrations")
         mcp_selection = st.pills(
-            label="Available MCP Servers", options=mcp_tools_list, selection_mode="multi", on_change=reset_agent
+            label="CRM/Support Tools", options=mcp_tools_list, selection_mode="multi", on_change=reset_agent
         )
 
         toolgroup_selection.extend(mcp_selection)
@@ -64,17 +77,17 @@ def tool_chat_page():
                 ]
             )
 
-        st.subheader(f"Active Tools: 🛠 {len(active_tool_list)}")
+        st.subheader(f"🛠 Active Tools: {len(active_tool_list)}")
         st.json(active_tool_list)
 
-        st.subheader("Chat Configurations")
+        st.subheader("Chat Configuration")
         max_tokens = st.slider(
             "Max Tokens",
             min_value=0,
             max_value=8126,
-            value=8126,
+            value=3000,
             step=1,
-            help="The maximum number of tokens to generate",
+            help="Max token length for responses",
             on_change=reset_agent,
         )
 
@@ -87,40 +100,44 @@ def tool_chat_page():
                 },
             )
             toolgroup_selection[i] = tool_dict
+
     @st.cache_resource
     def create_agent():
         return Agent(
             client,
             model=model,
-            instructions="You are a helpful AI assistant, responsible for helping me find and communicate information back to my team. You have access to a number of tools. Whenever a tool is called, be sure return the Response in a friendly and helpful tone. When you are asked to find out about opportunities and support casescounts you must use a tool.",
+            instructions=(
+                "You are a helpful account insights analyst working for ParasolCloud. "
+                "You help teams analyze customer accounts to identify risk, surface opportunity, "
+                "and summarize recent support history. Use the available tools as needed to "
+                "query CRM, support data, or relevant documents."
+            ),
             tools=["mcp::crm", "mcp::pdf"],
-            tool_config={"tool_choice":"auto"},
+            tool_config={"tool_choice": "auto"},
             sampling_params={"strategy": {"type": "greedy"}, "max_tokens": max_tokens},
         )
 
     agent = create_agent()
 
     if "agent_session_id" not in st.session_state:
-        st.session_state["agent_session_id"] = agent.create_session(session_name=f"tool_demo_{uuid.uuid4()}")
+        st.session_state["agent_session_id"] = agent.create_session(session_name=f"account_insight_{uuid.uuid4()}")
 
     session_id = st.session_state["agent_session_id"]
 
     if "messages" not in st.session_state:
-        st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+        st.session_state["messages"] = [{"role": "assistant", "content": "Enter the details of the customer analysis you want to perform"}]
 
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    prompt_raw = st.text_area("Enter your message (one line per entry):", height=150, key="multi_input")
-    submit = st.button("Send", use_container_width=True)
+    prompt_raw = st.text_area("Ask about an account, risk, or opportunity:", height=150, key="multi_input")
+    submit = st.button("Analyze", use_container_width=True)
 
     if submit and prompt_raw.strip():
-        prompts = prompt_raw.splitlines()  # Converts input into an array of strings
+        prompts = prompt_raw.splitlines()
 
         for single_prompt in prompts:
-   
-
             turn_response = agent.create_turn(
                 session_id=session_id,
                 messages=[{"role": "user", "content": single_prompt}],
@@ -137,13 +154,11 @@ def tool_chat_page():
                             if response.event.payload.step_details.step_type == "tool_execution":
                                 yield " 🛠 "
                     else:
-                        yield f"Error occurred in the Llama Stack Cluster: {response}"
+                        yield f"Error from Llama Stack: {response}"
 
             with st.chat_message("assistant"):
                 response = st.write_stream(response_generator(turn_response))
 
             st.session_state.messages.append({"role": "assistant", "content": response})
 
-
-
-tool_chat_page()
+account_analysis_page()

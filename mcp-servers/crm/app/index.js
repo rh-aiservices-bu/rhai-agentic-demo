@@ -23,7 +23,7 @@ const server = new McpServer({
 
 
 
-server.tool("getOpportunities", "Get a list of active opportunities", {
+server.tool("getOpportunities", "Get a list of active opportunities from the CRM system", {
 }, async () => {
     console.log('Looking up opportunities');
     try {
