@@ -96,6 +96,18 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
 
+### 2.4 MCP Slack Server
+
+Follow the [setup instructions](./mcp-servers/slack/README.md) to install MCP PDF Server
+
+#### 2.3.1 Register Slack MCP
+
+```sh
+curl -X POST -H "Content-Type: application/json" \
+  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::slack", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8000/sse"}}' \
+  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
+```
+
 ## UI
 
 To run the ui, build it first with podman;

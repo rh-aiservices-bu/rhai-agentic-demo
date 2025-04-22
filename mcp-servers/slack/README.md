@@ -51,7 +51,6 @@ This document is a quick walkthrough of how to deploy the slack MCP server on OC
      - `thread_ts` (string): Timestamp of the parent message
    - Returns: List of replies with their content and metadata
 
-
 7. `slack_get_users`
    - Get list of workspace users with basic profile information
    - Optional inputs:
@@ -89,6 +88,16 @@ Please follow the steps to create and config your slack bot. You will need acces
    - Save the "Bot User OAuth Token" that starts with `xoxb-`
 
 5. Get your Team ID (starts with a `T`) by following [this guidance](https://slack.com/help/articles/221769328-Locate-your-Slack-URL-or-ID#find-your-workspace-or-org-id)
+
+### Building Locally
+
+```md
+git clone https://github.com/modelcontextprotocol/servers.git .
+cd servers/src/slack
+npm install
+npm run build
+npx -y supergateway --stdio "node dist/index.js"
+```md
 
 ### Setting up on OCP
 #### Usage with Quay and Podman
