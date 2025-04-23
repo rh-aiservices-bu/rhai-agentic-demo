@@ -23,7 +23,7 @@ const server = new McpServer({
 
 
 
-server.tool("getOpportunities", "Get a list of active opportunities", {
+server.tool("getOpportunities", "Get a list of active opportunities from the CRM system", {
 }, async () => {
     console.log('Looking up opportunities');
     try {
@@ -59,7 +59,7 @@ server.tool("getOpportunities", "Get a list of active opportunities", {
             };
         }
 
-        const opportunityText = `Active Opportunities: ` + JSON.stringify(result.rows, null, 2);
+        const opportunityText = `Active Opportunities: ` + JSON.stringify(result.rows[0], null, 2);
         return {
             content: [
                 { type: "text", text: opportunityText },
