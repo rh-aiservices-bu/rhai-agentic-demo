@@ -121,3 +121,13 @@ Run the ui connecting to a local instance of Llama Stack on port 5001
 ```
 podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui
 ```
+
+
+Sample request:
+
+```
+Review the current opportunities for ACME
+Get a list of support cases for the account
+Determine the status of the account, e.g. unhappy, happy etc. based on the cases
+Generate a PDF document with a summary of the support cases and the account status
+```

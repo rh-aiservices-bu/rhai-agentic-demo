@@ -76,10 +76,8 @@ server.tool("getOpportunities", "Get a list of active opportunities from the CRM
 });
 
 
-server.tool("getSupportCases", "Get a list of support cases for a given account", {
-    id: z.string().describe("The id of the account"),
-}, async ({ id }) => {
-    console.log(`Looking up support cases for account ${id}`);
+server.tool("getSupportCases", "Get a list of support cases", {}, async () => {
+    console.log(`Looking up support cases for account id 1`);
     try {
         const query = `
             SELECT 
@@ -96,22 +94,22 @@ server.tool("getSupportCases", "Get a list of support cases for a given account"
                 accounts 
                 ON support_cases.account_id = accounts.id
             WHERE 
-                support_cases.account_id = $1
+                support_cases.account_id = '1'
             ORDER BY 
                 support_cases.created_at DESC;
         `;
 
-        const result = await dbClient.query(query, [id]);
+        const result = await dbClient.query(query);
 
         if (result.rows.length === 0) {
             return {
                 content: [
-                    { type: "text", text: `No support cases found for account ${id}.` },
+                    { type: "text", text: `No support cases found for account 1.` },
                 ],
             };
         }
 
-        const caseText = `Support Cases for account ${id}:` + JSON.stringify(result.rows, null, 2);
+        const caseText = `Support Cases for account i:` + JSON.stringify(result.rows, null, 2);
         return {
             content: [
                 { type: "text", text: caseText },

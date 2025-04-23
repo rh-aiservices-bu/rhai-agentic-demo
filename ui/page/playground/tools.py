@@ -1,3 +1,9 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the terms described in the LICENSE file in
+# the root directory of this source tree.
+
 import uuid
 
 import streamlit as st
@@ -5,28 +11,9 @@ from llama_stack_client import Agent
 
 from llama_stack.distribution.ui.modules.api import llama_stack_api
 
-def account_analysis_page():
-    # Inject CSS styles for theme and layout
-    st.markdown("""
-        <style>
-            .main {
-                background-color: #d0d7dd;
-            }
-            .block-container {
-                padding-top: 2rem;
-            }
-            header {visibility: hidden;}
-            footer {visibility: hidden;}
-            .reportview-container .markdown-text-container {
-                font-family: 'Segoe UI', sans-serif;
-                color: #1e2a38;
-            }
-        </style>
-    """, unsafe_allow_html=True)
 
-
-
-    st.title("ParasolCloud: Account Insights Tool")
+def tool_chat_page():
+    st.title("ParasolCloud Account Insights Tool")
 
     client = llama_stack_api.client
     models = client.models.list()
@@ -42,28 +29,28 @@ def account_analysis_page():
         st.cache_resource.clear()
 
     with st.sidebar:
-        st.subheader("Model Selection")
-        model = st.selectbox(label="LLM Models", options=model_list, on_change=reset_agent)
+        st.subheader("Model")
+        model = st.selectbox(label="models", options=model_list, on_change=reset_agent)
 
-        st.subheader("Select ToolGroups")
+        st.subheader("Builtin Tools")
         toolgroup_selection = st.pills(
-            label="Internal Tools", options=builtin_tools_list, selection_mode="multi", on_change=reset_agent
+            label="Available ToolGroups", options=builtin_tools_list, selection_mode="multi", on_change=reset_agent
         )
 
         if "builtin::rag" in toolgroup_selection:
             vector_dbs = llama_stack_api.client.vector_dbs.list() or []
             if not vector_dbs:
-                st.info("No vector databases found.")
+                st.info("No vector databases available for selection.")
             vector_dbs = [vector_db.identifier for vector_db in vector_dbs]
             selected_vector_dbs = st.multiselect(
-                label="Select Knowledge Sources for RAG",
+                label="Select Document Collections to use in RAG queries",
                 options=vector_dbs,
                 on_change=reset_agent,
             )
 
-        st.subheader("MCP Integrations")
+        st.subheader("MCP Servers")
         mcp_selection = st.pills(
-            label="CRM/Support Tools", options=mcp_tools_list, selection_mode="multi", on_change=reset_agent
+            label="Available MCP Servers", options=mcp_tools_list, selection_mode="multi", on_change=reset_agent
         )
 
         toolgroup_selection.extend(mcp_selection)
@@ -77,17 +64,17 @@ def account_analysis_page():
                 ]
             )
 
-        st.subheader(f"🛠 Active Tools: {len(active_tool_list)}")
+        st.subheader(f"Active Tools: 🛠 {len(active_tool_list)}")
         st.json(active_tool_list)
 
-        st.subheader("Chat Configuration")
+        st.subheader("Chat Configurations")
         max_tokens = st.slider(
             "Max Tokens",
             min_value=0,
-            max_value=8126,
-            value=3000,
+            max_value=9000,
+            value=9000,
             step=1,
-            help="Max token length for responses",
+            help="The maximum number of tokens to generate",
             on_change=reset_agent,
         )
 
@@ -100,27 +87,21 @@ def account_analysis_page():
                 },
             )
             toolgroup_selection[i] = tool_dict
-
     @st.cache_resource
     def create_agent():
         return Agent(
             client,
             model=model,
-            instructions=(
-                "You are a helpful account insights analyst working for ParasolCloud. "
-                "You help teams analyze customer accounts to identify risk, surface opportunity, "
-                "and summarize recent support history. Use the available tools as needed to "
-                "query CRM, support data, or relevant documents."
-            ),
+            instructions="You are a helpful AI assistant, responsible for helping me find and communicate information back to my team. You have access to a number of tools. Whenever a tool is called, be sure return the Response in a friendly and helpful tone. When you are asked to find out about opportunities and support cases you must use a tool. If you need to create a pdf you must use a tool, create the content for the pdf as simple markdown formatted as tables where possible and add this markdown to the start of the generated markdown:  '![ParasolCloud Logo](https://i.postimg.cc/MHZB5tmL/Screenshot-2025-04-21-at-5-58-46-PM.png) *Secure Cloud Solutions for a Brighter Business* \n --- \n'  ",
             tools=["mcp::crm", "mcp::pdf"],
-            tool_config={"tool_choice": "auto"},
+            tool_config={"tool_choice":"auto"},
             sampling_params={"strategy": {"type": "greedy"}, "max_tokens": max_tokens},
         )
 
     agent = create_agent()
 
     if "agent_session_id" not in st.session_state:
-        st.session_state["agent_session_id"] = agent.create_session(session_name=f"account_insight_{uuid.uuid4()}")
+        st.session_state["agent_session_id"] = agent.create_session(session_name=f"tool_demo_{uuid.uuid4()}")
 
     session_id = st.session_state["agent_session_id"]
 
@@ -131,13 +112,16 @@ def account_analysis_page():
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    prompt_raw = st.text_area("Ask about an account, risk, or opportunity:", height=150, key="multi_input")
+    prompt_raw = st.text_area("Enter the details of the analysis you want to perform", height=150, key="multi_input")
     submit = st.button("Analyze", use_container_width=True)
 
     if submit and prompt_raw.strip():
-        prompts = prompt_raw.splitlines()
+        print(model)
+        prompts = prompt_raw.splitlines()  # Converts input into an array of strings
 
         for single_prompt in prompts:
+   
+
             turn_response = agent.create_turn(
                 session_id=session_id,
                 messages=[{"role": "user", "content": single_prompt}],
@@ -154,11 +138,13 @@ def account_analysis_page():
                             if response.event.payload.step_details.step_type == "tool_execution":
                                 yield " 🛠 "
                     else:
-                        yield f"Error from Llama Stack: {response}"
+                        yield f"Error occurred in the Llama Stack Cluster: {response}"
 
             with st.chat_message("assistant"):
                 response = st.write_stream(response_generator(turn_response))
 
             st.session_state.messages.append({"role": "assistant", "content": response})
 
-account_analysis_page()
+
+
+tool_chat_page()
