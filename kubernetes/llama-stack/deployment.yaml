@@ -1,0 +1,80 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: llamastack-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llamastack
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: llamastack
+    spec:
+      volumes:
+        - name: run-config-volume
+          configMap:
+            name: run-config
+            defaultMode: 420
+        - name: llama-persist
+          persistentVolumeClaim:
+            claimName: llama-persist
+        - name: cache
+          emptyDir: {}
+        - name: pythain
+          emptyDir: {}
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: llamastack
+          env:
+            - name: MAX_TOKENS
+              value: '128000'
+            - name: VLLM_MAX_TOKENS
+              value: '128000'
+            - name: LLAMA3B_MODEL
+              value: llama32-3b
+            - name: GRANITE_URL
+              value: 'https://granite32-8b-llama-serve.apps.prod.rhoai.rh-aiservices-bu.com/v1'
+            - name: GRANITE_MODEL
+              value: granite32-8b
+            - name: LLAMA3B_URL
+              value: 'https://llama32-3b-llama-serve.apps.prod.rhoai.rh-aiservices-bu.com/v1'
+            - name: VLLM_API_TOKEN
+              value: fake
+            - name: MILVUS_DB_PATH
+              value: milvus.db
+            - name: LLAMA_STACK_LOG
+              value: debug
+          ports:
+            - containerPort: 8321
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: pythain
+              mountPath: /pythainlp-data
+            - name: run-config-volume
+              mountPath: /app-config
+            - name: llama-persist
+              mountPath: /.llama
+            - name: cache
+              mountPath: /.cache
+          terminationMessagePolicy: File
+          image: 'quay.io/redhat-et/llama:vllm-0.2.2'
+          args:
+            - '--config'
+            - /app-config/config.yaml
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

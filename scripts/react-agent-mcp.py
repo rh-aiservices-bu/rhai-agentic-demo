@@ -30,9 +30,9 @@ def main(host: str, port: int):
         client=client,
         model=selected_model,
         tools=[
-            "builtin::websearch",
-            "mcp::slack",
-            # "mcp::pdf",
+            # "builtin::websearch",
+            # "mcp::slack",
+            "mcp::pdf",
             # "mcp::crm",
             # "mcp::python",
             ],
@@ -55,7 +55,8 @@ def main(host: str, port: int):
 
     user_prompts = [
         #"What is the capital of Italy?",
-        "Post a slack message in the agentic-ai-slack channel 'C08P4G402HZ' with the result of the question 'What is the capital of Italy?'",
+        #"Post a slack message in the agentic-ai-slack channel 'C08P4G402HZ' with the result of the question 'What is the capital of Italy?'",
+        "Create a pdf with 'Hello Agentic!' as text",
     ]
 
     for prompt in user_prompts:

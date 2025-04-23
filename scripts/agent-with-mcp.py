@@ -39,9 +39,9 @@ def main(host: str, port: int):
         },
         toolgroups=(
             [
-                "mcp::slack",
+                #"mcp::slack",
                 "builtin::websearch",
-                # "mcp::pdf",
+                "mcp::pdf",
                 # "mcp::crm",
                 # "mcp::python",
             ]
@@ -54,9 +54,9 @@ def main(host: str, port: int):
     agent = Agent(client, agent_config)
 
     user_prompts = [
-        #"Create a pdf with the text 'Hello MCP!'",
-        """"What is the capital of Italy?""",
-        """Post a slack message in the agentic-ai-slack channel 'C08P4G402HZ' with the result of the last question""",
+        "Create a pdf with 'Hello Agentic!' as text",
+        #""""What is the capital of Italy?""",
+        #"""Post a slack message in the agentic-ai-slack channel 'C08P4G402HZ' with the result of the last question""",
     ]
 
     session_id = agent.create_session("test-session")
