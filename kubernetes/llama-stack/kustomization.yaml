@@ -4,6 +4,8 @@ kind: Kustomization
 namespace: llama-serve
 
 resources:
-  - oci-data-connection.yaml
-  - servingruntime.yaml
-  - inferenceservice.yaml
+  - pvc.yaml
+  - route.yaml
+  - service.yaml
+  - deployment.yaml
+  - configmap.yaml
