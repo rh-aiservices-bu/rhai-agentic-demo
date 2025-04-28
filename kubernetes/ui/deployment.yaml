@@ -1,0 +1,49 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ui
+  labels:
+    app: ui
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: ui
+    app.kubernetes.io/name: ui
+    app.kubernetes.io/part-of: ui-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ui
+        deployment: ui
+    spec:
+      containers:
+        - name: ui
+          image: quay.io/rh-aiservices-bu/rh-summit-agentic-demo-ui:v1
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8501
+              protocol: TCP
+          env:
+            - name: LLAMA_STACK_ENDPOINT
+              value: 'http://llamastack-server.llama-serve.svc.cluster.local:8321'
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

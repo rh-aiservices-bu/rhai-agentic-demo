@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  labels:
+    app: ui
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: ui
+    app.kubernetes.io/name: ui
+    app.kubernetes.io/part-of: ui-app
+spec:
+  selector:
+    app: ui
+    deployment: ui
+  ports:
+    - protocol: TCP
+      port: 8501
+      targetPort: 8501
+      

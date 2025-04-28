@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-mcp-server
+  labels:
+    app: pdf-mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pdf-mcp-server
+  template:
+    metadata:
+      labels:
+        app: pdf-mcp-server
+    spec:
+      containers:
+        - name: pdf-mcp-server
+          image: quay.io/rh-aiservices-bu/mcp-servers:pdf
+          imagePullPolicy: Always
+          command: ["/bin/sh", "-c"]
+          args:
+            - npx -y supergateway --stdio "node build/index.js" --port 8010
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: NPM_CONFIG_CACHE
+              value: /tmp/.npm
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"

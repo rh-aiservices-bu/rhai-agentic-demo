@@ -8,5 +8,5 @@ spec:
   selector:
     app: crm-mcp-server
   ports:
-  - port: 80
+  - port: 8080
     targetPort: 8080
