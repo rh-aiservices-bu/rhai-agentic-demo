@@ -3,6 +3,8 @@ Agentic AI Demo Repository for the Red Hat Summit 2025 Booth
 
 This is a work-in-progress (WIP) repository, and modifications will be made.
 
+![Demo Topology Diagram](./docs/images/demo1.png)
+
 ## Setup
 
 ### 1. Databases
