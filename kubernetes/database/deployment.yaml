@@ -14,29 +14,30 @@ spec:
     spec:
       containers:
         - name: postgresql
-          image: postgres
+          image: registry.redhat.io/rhel9/postgresql-15
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
               protocol: TCP
           env:
-            - name: POSTGRES_PASSWORD
+            - name: POSTGRESQL_USER
               value: claimdb
-            - name: POSTGRES_USER
+            - name: POSTGRESQL_PASSWORD
               value: claimdb
-            - name: POSTGRES_DB
+            - name: POSTGRESQL_DATABASE
               value: claimdb
           volumeMounts:
             - name: postgresql-data
-              mountPath: /var/lib/postgresql
+              mountPath: /var/lib/pgsql/data
             - name: init-sql
-              mountPath: /docker-entrypoint-initdb.d
+              mountPath: /opt/app-root/src/postgresql-startup
+          resources:
+            limits:
+              memory: 512Mi
           readinessProbe:
             exec:
               command:
-                - pg_isready
-                - -U
-                - claimdb
+                - /usr/libexec/check-container
             initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 10
@@ -45,26 +46,17 @@ spec:
           livenessProbe:
             exec:
               command:
-                - pg_isready
-                - -U
-                - claimdb
+                - /usr/libexec/check-container
             initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 3
-          resources:
-            limits:
-              memory: 512Mi
-          securityContext:
-            capabilities: {}
-            privileged: false
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
-      securityContext: {}
       schedulerName: default-scheduler
       volumes:
         - name: postgresql-data

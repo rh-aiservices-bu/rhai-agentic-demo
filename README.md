@@ -1,131 +1,56 @@
 # Red Hat Summit Agentic Demo
+
 Agentic AI Demo Repository for the Red Hat Summit 2025 Booth
+
+![Demo](./docs/images/demo.gif)
 
 This is a work-in-progress (WIP) repository, and modifications will be made.
 
+## 1. Architecture
+
+The demo architecture consists of the following components:
+
+![Demo Topology Diagram](./docs/images/demo2.png)
+
+- **UI / Frontend**: Receives user requests and displays responses.
+- **Llama-Stack Server**: Orchestrates interactions with the LLMs and MCP servers.
+- **MCP Servers**: Integrate with external systems such as CRM, PDF generation, and Slack.
+- **LLMs**: Models (Granite 3.2-8B and Llama 3.2-3B) deployed on OpenShift AI.
+
+### 1.1 Flow Overview
+
+1. The **UI Frontend** receives the user request.
+2. The **Llama-Stack Server** processes the request, communicates with the LLMs, and selects the appropriate tools.
+3. The **MCP Servers** handle interactions with CRM, PDF generation, and Slack.
+4. The **LLMs** (Granite 3.2-8B and Llama 3.2-3B) reason over the data and generate a contextualized response.
+5. The **UI Frontend** displays the final response back to the user.
+
+## 2. Setup
+
+### 2.1 Prerequisites
+
+* OpenShift Cluster 4.17+
+* OpenShift AI 2.16+
+* 2 GPUs with a minimum of 24GiB VRAM each
+
+### 2.2 Deploy the demo in OpenShift / OpenShift AI
+
+To deploy the demo on your OpenShift environment:
+
+```sh
+oc apply -k kubernetes/deploy-demo
+```
+
 ![Demo Topology Diagram](./docs/images/demo1.png)
 
-## Setup
 
-### 1. Databases
+### 2.2 Deploy the demo locally
 
-Start postgres:
+If you prefer to run the demo locally for development or testing purposes, follow the instructions in the [local deployment guide](./docs/deploy-demo-local.md)
 
-```sh
-podman run -it --name postgres \
-  -e POSTGRES_USER=claimdb \
-  -e POSTGRES_PASSWORD=claimdb \
-  -v ./local/import.sql:/docker-entrypoint-initdb.d/import.sql:ro \
-  -p 5432:5432 \
-  -v /var/lib/data \
-  -d postgres
-  ```
+## 3. Sample Requests
 
-## 2. MCP Servers
-
-### 2.1 MCP CRM Service
-
-Start the MCP CRM service
-
-```sh
-cd mcp-servers/crm
-npm install
-```
-
-Set the required database environment variables:
-
-```sh
-export DB_USER=claimdb
-export DB_HOST=localhost
-export DB_NAME=claimdb
-export DB_PASSWORD=claimdb
-```
-
-Run the MCP server using `npx`:
-
-```sh
-npx -y supergateway --stdio "node app/index.js"
-```
-
-#### 2.1.1 Register the MCP toolgroup
-
-```sh
-export LLAMA_STACK_PORT=5001
-```
-
-```
-curl -X POST -H "Content-Type: application/json" \
-  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::crm", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8000/sse"}}' \
-  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
-```
-
-### 2.2 MCP Python Sandbox
-
-Install deno with 
-
-```sh
-brew install deno
-```
-
-Run the python sandbox mcp server
-
-```sh
-deno run \
-  -N -R=node_modules -W=node_modules --node-modules-dir=auto \
-  jsr:@pydantic/mcp-run-python sse
-```
-
-#### 2.2.2 Register the MCP toolgroup
-
-Register the MCP server
-
-```sh
-curl -X POST -H "Content-Type: application/json" \
-  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::python", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:3001/sse"}}' \
-  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
-
-```
-
-### 2.3 MCP PDF Server
-
-Follow the [setup instructions](./mcp-servers/pdf/README.md) to install MCP PDF Server
-
-#### 2.3.1 Register PDF MCP
-
-```sh
-curl -X POST -H "Content-Type: application/json" \
-  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::pdf", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8010/sse"}}' \
-  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
-```
-
-### 2.4 MCP Slack Server
-
-Follow the [setup instructions](./mcp-servers/slack/README.md) to install MCP PDF Server
-
-#### 2.3.1 Register Slack MCP
-
-```sh
-curl -X POST -H "Content-Type: application/json" \
-  --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::slack", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8000/sse"}}' \
-  http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
-```
-
-## UI
-
-To run the ui, build it first with podman;
-
-```sh
-podman build -t ui -f ui/Containerfile
-```
-
-Run the ui connecting to a local instance of Llama Stack on port 5001
-
-```
-podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui
-```
-
-
-Sample request:
+Here are some example prompts to interact with the system:
 
 ```
 Review the current opportunities for ACME
