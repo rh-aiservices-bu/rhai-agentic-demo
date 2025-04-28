@@ -30,3 +30,7 @@ podman build -t mcp_server:pdf --platform="linux/amd64" .
 ```sh
 podman run --rm mcp_server:pdf
 ```
+
+```sh
+podman run --rm quay.io/rh-aiservices-bu/mcp-servers:pdf
+```

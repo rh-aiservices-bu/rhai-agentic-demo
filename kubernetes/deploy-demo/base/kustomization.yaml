@@ -6,5 +6,6 @@ resources:
   - ../../llama-stack
   - ../../mcp-servers/crm
   - ../../mcp-servers/slack
-  #- ../../mcp-servers/pdf
+  - ../../mcp-servers/pdf
+  - ../../ui
   #- ../../mcp-servers/python
