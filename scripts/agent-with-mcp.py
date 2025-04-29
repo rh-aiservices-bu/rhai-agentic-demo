@@ -39,10 +39,10 @@ def main(host: str, port: int):
         },
         toolgroups=(
             [
-                #"mcp::slack",
-                "builtin::websearch",
-                "mcp::pdf",
-                # "mcp::crm",
+                "mcp::slack",
+                #"builtin::websearch",
+                #"mcp::pdf",
+                "mcp::crm",
                 # "mcp::python",
             ]
         ),
@@ -54,9 +54,12 @@ def main(host: str, port: int):
     agent = Agent(client, agent_config)
 
     user_prompts = [
-        "Create a pdf with 'Hello Agentic!' as text",
-        #""""What is the capital of Italy?""",
-        #"""Post a slack message in the agentic-ai-slack channel 'C08P4G402HZ' with the result of the last question""",
+        "Review the current opportunities for ACME",
+        "Post a slack message in the agentic-ai-slack channel with the opportunities",
+        "Get a list of support cases for the account",
+        "Post a slack message in the agentic-ai-slack channel with the list of support cases",
+        "Determine the status of the account, e.g. unhappy, happy etc. based on the cases",
+        "Post a slack message in the agentic-ai-slack channel with the status of the account",
     ]
 
     session_id = agent.create_session("test-session")

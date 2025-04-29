@@ -92,7 +92,7 @@ Please follow the steps to create and config your slack bot. You will need acces
 ### Building Locally
 
 ```md
-git clone https://github.com/modelcontextprotocol/servers.git .
+git clone https://github.com/modelcontextprotocol/servers.git
 cd servers/src/slack
 npm install
 npm run build
