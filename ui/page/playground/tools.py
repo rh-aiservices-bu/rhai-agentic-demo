@@ -36,6 +36,7 @@ def tool_chat_page():
             "mcp::crm": "Sales & support portal",
             "mcp::pdf": "Document generator",
             "mcp::slack": "Slack integration",
+            "mcp::upload": "Report Processor",
         }
         mcp_display_options = [mcp_label_map.get(tool, tool) for tool in mcp_tools_list]
         mcp_label_to_tool = {mcp_label_map.get(k, k): k for k in mcp_tools_list}
@@ -55,6 +56,7 @@ def tool_chat_page():
             "builtin::websearch": "Web search",
             "builtin::rag": "Retrieval augmented generation",
             "builtin::code_interpreter": "Code generator",
+            "builtin::wolfram_alpha": "Wolfram Alpha",
         }
         blt_display_options = [builtin_label_map.get(tool, tool) for tool in builtin_tools_list]
         blt_label_to_tool = {builtin_label_map.get(k, k): k for k in builtin_tools_list}
@@ -125,7 +127,7 @@ def tool_chat_page():
             client,
             model=model,
             instructions="You are a helpful AI assistant, responsible for helping me find and communicate information back to my team. You have access to a number of tools. Whenever a tool is called, be sure return the Response in a friendly and helpful tone. When you are asked to find out about opportunities and support cases you must use a tool. If you need to create a pdf you must use a tool, create the content for the pdf as simple markdown formatted as tables where possible and add this markdown to the start of the generated markdown:  '![ParasolCloud Logo](https://i.postimg.cc/MHZB5tmL/Screenshot-2025-04-21-at-5-58-46-PM.png) *Secure Cloud Solutions for a Brighter Business* \n --- \n'  ",
-            tools=["mcp::crm", "mcp::pdf", "mcp::slack"],
+            tools=["mcp::crm", "mcp::pdf", "mcp::slack", "mcp::upload"],
             tool_config={"tool_choice":"auto"},
             sampling_params={"strategy": {"type": "greedy"}, "max_tokens": max_tokens},
         )
