@@ -1,0 +1,29 @@
+{
+  "name": "@modelcontextprotocol/process-report",
+  "version": "1.0.0",
+  "description": "MCP server for uploading PDF reports to a reporting repository",
+  "license": "MIT",
+  "author": "Red Hat AI BU - CAI Team",
+  "type": "module",
+  "bin": {
+    "mcp-server-process-report": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "dev": "ts-node --esm app/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "ts-node": "^10.9.2",
+    "shx": "^0.3.4",
+    "@types/node": "^22"
+  }
+}
