@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: slack-mcp-server
-        image: quay.io/redhat-et/slack-mcp-server:latest
+        image: quay.io/rh-aiservices-bu/mcp-servers:slack
         imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
         args:
