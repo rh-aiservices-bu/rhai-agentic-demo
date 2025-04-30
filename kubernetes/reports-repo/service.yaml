@@ -4,7 +4,6 @@ metadata:
   labels:
     app: reports-repo
   name: reports-repo
-  namespace: cicd
 spec:
   ports:
   - name: 8080-tcp

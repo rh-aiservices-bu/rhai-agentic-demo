@@ -4,7 +4,6 @@ metadata:
   labels:
     app: reports-repo
   name: reports-repo-pv
-  namespace: cicd
 spec:
   accessModes:
   - ReadWriteOnce
