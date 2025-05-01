@@ -4,6 +4,7 @@ resources:
   - ../../llama-serve/llama3.2-3b
   - ../../llama-serve/granite3.2-8b
   - ../../llama-stack
+  - ../../reports-repo
   - ../../mcp-servers/crm
   - ../../mcp-servers/slack
   - ../../mcp-servers/pdf
