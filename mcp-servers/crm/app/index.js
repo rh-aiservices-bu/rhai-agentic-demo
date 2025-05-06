@@ -24,7 +24,8 @@ const server = new McpServer({
 
 
 server.tool("getOpportunities", "Get a list of active opportunities from the CRM system", {
-}, async () => {
+    customerName: z.string().describe("The customer name related to the opportunities"),
+}, async ({ customerName }) => {
     console.log('Looking up opportunities');
     try {
         const query = `
@@ -76,7 +77,9 @@ server.tool("getOpportunities", "Get a list of active opportunities from the CRM
 });
 
 
-server.tool("getSupportCases", "Get a list of support cases", {}, async () => {
+server.tool("getSupportCases", "Get a list of support cases", {
+    id: z.string().describe("The id of the customer"),
+}, async ({ id }) => {
     console.log(`Looking up support cases for account id 1`);
     try {
         const query = `

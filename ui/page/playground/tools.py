@@ -7,7 +7,7 @@
 import uuid
 
 import streamlit as st
-from llama_stack_client import Agent
+from llama_stack_client.lib.agents.react.agent import ReActAgent
 
 from llama_stack.distribution.ui.modules.api import llama_stack_api
 
@@ -123,14 +123,22 @@ def tool_chat_page():
             toolgroup_selection[i] = tool_dict
     @st.cache_resource
     def create_agent():
-        return Agent(
+        return ReActAgent(
             client,
-            model=model,
-            instructions="You are a helpful AI assistant, responsible for helping me find and communicate information back to my team. You have access to a number of tools. Whenever a tool is called, be sure return the Response in a friendly and helpful tone. When you are asked to find out about opportunities and support cases you must use a tool. If you need to create a pdf you must use a tool, create the content for the pdf as simple markdown formatted as tables where possible and add this markdown to the start of the generated markdown:  '![ParasolCloud Logo](https://i.postimg.cc/MHZB5tmL/Screenshot-2025-04-21-at-5-58-46-PM.png) *Secure Cloud Solutions for a Brighter Business* \n --- \n'  ",
-            tools=["mcp::crm", "mcp::pdf", "mcp::slack", "mcp::upload"],
-            tool_config={"tool_choice":"auto"},
+            model,
+            tools=["mcp::crm"],
             sampling_params={"strategy": {"type": "greedy"}, "max_tokens": max_tokens},
         )
+    
+    #     agent = ReActAgent(
+    #     client=client,
+    #     model=model_id,
+    #     tools=["mcp::crm"],
+    #         sampling_params={
+    #     "max_tokens":4096,
+    #     "strategy": {"type": "greedy"},
+    # }
+    # )
 
     agent = create_agent()
 

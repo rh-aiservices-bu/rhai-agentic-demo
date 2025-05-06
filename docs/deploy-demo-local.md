@@ -14,9 +14,35 @@ podman run -it --name postgres \
   -d postgres
 ```
 
-## 2. MCP Servers
+### 2 Run Ollama
 
-### 2.1 MCP CRM Service
+```sh
+ollama run llama3.2:3b-instruct-fp16 --keepalive 60m
+```
+
+Once the model is running enter `/bye` to quit
+
+### 3 Run Llama Stack
+
+```sh
+export LLAMA_STACK_MODEL="meta-llama/Llama-3.2-3B-Instruct"
+export INFERENCE_MODEL="meta-llama/Llama-3.2-3B-Instruct"
+export LLAMA_STACK_PORT=8321
+export LLAMA_STACK_SERVER=http://localhost:$LLAMA_STACK_PORT
+```
+
+```sh
+podman run -it \
+  -p $LLAMA_STACK_PORT:$LLAMA_STACK_PORT \
+  llamastack/distribution-ollama:0.2.2 \
+  --port $LLAMA_STACK_PORT \
+  --env INFERENCE_MODEL=$LLAMA_STACK_MODEL \
+  --env OLLAMA_URL=http://host.containers.internal:11434
+```
+
+## 4. MCP Servers
+
+### 4.1 MCP CRM Service
 
 Start the MCP CRM service
 
@@ -40,19 +66,19 @@ Run the MCP server using `npx`:
 npx -y supergateway --stdio "node app/index.js"
 ```
 
-#### 2.1.1 Register the MCP toolgroup
+#### 4.1.1 Register the MCP toolgroup
 
 ```sh
-export LLAMA_STACK_PORT=5001
+export LLAMA_STACK_PORT=8321
 ```
 
-```
+```sh
 curl -X POST -H "Content-Type: application/json" \
   --data '{ "provider_id" : "model-context-protocol", "toolgroup_id" : "mcp::crm", "mcp_endpoint" :{ "uri" : "http://host.containers.internal:8000/sse"}}' \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
 
-### 2.2 MCP Python Sandbox
+### 4.2 MCP Python Sandbox
 
 Install deno with 
 
@@ -68,7 +94,7 @@ deno run \
   jsr:@pydantic/mcp-run-python sse
 ```
 
-#### 2.2.2 Register the MCP toolgroup
+#### 4.2.2 Register the MCP toolgroup
 
 Register the MCP server
 
@@ -79,11 +105,11 @@ curl -X POST -H "Content-Type: application/json" \
 
 ```
 
-### 2.3 MCP PDF Server
+### 4.3 MCP PDF Server
 
 Follow the [setup instructions](./mcp-servers/pdf/README.md) to install MCP PDF Server
 
-#### 2.3.1 Register PDF MCP
+#### 4.3.1 Register PDF MCP
 
 ```sh
 curl -X POST -H "Content-Type: application/json" \
@@ -91,11 +117,11 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
 
-### 2.4 MCP Slack Server
+### 4.4 MCP Slack Server
 
 Follow the [setup instructions](./mcp-servers/slack/README.md) to install MCP PDF Server
 
-#### 2.3.1 Register Slack MCP
+#### 4.3.1 Register Slack MCP
 
 ```sh
 curl -X POST -H "Content-Type: application/json" \
@@ -103,16 +129,12 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
 ```
 
-## UI
+### 5 Run the UI
 
-To run the ui, build it first with podman;
+To run the ui
 
 ```sh
-podman build -t ui -f ui/Containerfile
-```
-
-Run the ui connecting to a local instance of Llama Stack on port 5001
-
-```
-podman run -p 8501:8501 -e LLAMA_STACK_ENDPOINT=http://host.containers.internal:5001 ui
+cd ui
+pip install streamlit
+streamlit run app.py
 ```
