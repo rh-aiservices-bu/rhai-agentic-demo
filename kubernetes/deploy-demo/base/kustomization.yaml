@@ -5,8 +5,10 @@ resources:
   - ../../llama-serve/granite3.2-8b
   - ../../llama-stack
   - ../../reports-repo
+  - ../../crm
+  - ../../database
+  - ../../ui
   - ../../mcp-servers/crm
   - ../../mcp-servers/slack
   - ../../mcp-servers/pdf
-  - ../../ui
-  #- ../../mcp-servers/python
+  - ../../mcp-servers/upload
