@@ -40,6 +40,9 @@ data:
         account_id INTEGER NOT NULL REFERENCES accounts(id)
     );
 
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO claimdb;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO claimdb;
+
     INSERT INTO accounts (name) VALUES 
     ('Acme Corp'), 
     ('Globex Inc'), 
