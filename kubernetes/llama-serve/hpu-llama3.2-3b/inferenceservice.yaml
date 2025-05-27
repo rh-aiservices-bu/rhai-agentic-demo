@@ -1,0 +1,41 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: llama3.2-3b
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    sidecar.istio.io/inject: 'true'
+    #security.opendatahub.io/enable-auth: 'false'
+    #sidecar.istio.io/inject: 'false'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: llama32-3b
+  finalizers:
+    - inferenceservice.finalizers
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    annotations:
+      serving.knative.dev/progress-deadline: 60m  
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      env:
+      - name: VLLM_SKIP_WARMUP
+        value: 'false'
+      - name: VLLM_GRAPH_RESERVED_MEM
+        value: '0.25'
+      modelFormat:
+        name: vLLM
+      name: ''
+      resources:
+        limits:
+          cpu: '6'
+          memory: 16Gi
+          habana.ai/gaudi: '1'
+        requests:
+          cpu: '4'
+          memory: 8Gi
+          habana.ai/gaudi: '1'
+      runtime: llama32-3b
+      storageUri: 'oci://quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-3b-instruct'
