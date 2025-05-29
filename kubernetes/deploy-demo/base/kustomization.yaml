@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - ../../llama-serve/llama3.2-3b
   - ../../llama-serve/granite3.2-8b
+#  - ../../llama-serve/hpu-llama3.2-3b
+#  - ../../llama-serve/hpu-granite3.2-8b
   - ../../llama-stack
   - ../../reports-repo
   - ../../crm
