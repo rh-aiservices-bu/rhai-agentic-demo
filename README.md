@@ -32,6 +32,7 @@ The demo architecture consists of the following components:
 * OpenShift Cluster 4.17+
 * OpenShift AI 2.16+
 * 2 GPUs with a minimum of 24GiB VRAM each
+    * Supports both NVIDIA and Intel Habana Gaudi GPUs :)
 
 ### 2.2 Deploy the demo in OpenShift / OpenShift AI
 
