@@ -1,17 +1,37 @@
-FROM ghcr.io/puppeteer/puppeteer:latest
+FROM ghcr.io/puppeteer/puppeteer:24.8.2
 
 # Set working directory
 WORKDIR /app
 
-# Clone the markdown2pdf MCP repo
-RUN git clone https://github.com/2b3pro/markdown2pdf-mcp.git
-WORKDIR /app/markdown2pdf-mcp
+# Create required directories with proper permissions
+RUN mkdir -p /home/pptruser/.cache/puppeteer && \
+    mkdir -p /tmp/chrome-user-data && \
+    mkdir -p /tmp/crashpad && \
+    mkdir -p /app/markdown2pdf-mcp && \
+    chown -R pptruser:pptruser /home/pptruser/.cache/puppeteer && \
+    chown -R pptruser:pptruser /tmp/chrome-user-data && \
+    chown -R pptruser:pptruser /tmp/crashpad
 
-# Install dependencies and build
-RUN npm install && npm run build
+
+# Clone the markdown2pdf MCP repo
+RUN git clone https://github.com/2b3pro/markdown2pdf-mcp.git && \
+    cd markdown2pdf-mcp && \
+    git checkout 32c0dfa
+
+WORKDIR /app/markdown2pdf-mcp
+COPY  ./render.js /app/markdown2pdf-mcp/src/puppeteer/render.js
+
+# Install dependencies and build and remove extra chrome installation
+RUN npm install && npm run build && \
+    find /home/pptruser/.cache/puppeteer/chrome/ -mindepth 1 -maxdepth 1 \
+        ! -name 'linux-131.0.6778.204' -exec rm -rf {} +
 
 # Expose the server port (default is 8010)
 EXPOSE 8010
+
+# Set Puppeteer environment variables
+ENV PUPPETEER_EXECUTABLE_PATH=/home/pptruser/.cache/puppeteer/chrome/linux-131.0.6778.204/chrome-linux64/chrome
+ENV PUPPETEER_LAUNCH_ARGS="--no-sandbox --disable-crashpad --user-data-dir=/tmp/chrome-user-data --crashpad-database=/tmp/crashpad"
 
 # Start the MCP server with supergateway
 CMD ["npx", "-y", "supergateway", "--stdio", "node build/index.js", "--port", "8010"]
