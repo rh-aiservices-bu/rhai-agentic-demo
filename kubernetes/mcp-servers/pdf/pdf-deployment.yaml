@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: pdf-mcp-server
-          image: quay.io/rh-aiservices-bu/mcp-servers:pdf
+          #image: quay.io/rh-aiservices-bu/mcp-servers:pdf
+          image: quay.io/rusrin/rh-aiservices-bu:mcp-servers_pdf_v4
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args:
@@ -27,6 +28,12 @@ spec:
           env:
             - name: NPM_CONFIG_CACHE
               value: /tmp/.npm
+            - name: XDG_CONFIG_HOME
+              value: "/tmp/.chromium"
+            - name: XDG_CACHE_HOME
+              value: "/tmp/.chromium"
+            - name: M2P_OUTPUT_DIR
+              value: "/mcp_output"
           resources:
             limits:
               cpu: "500m"
@@ -34,3 +41,22 @@ spec:
             requests:
               cpu: "200m"
               memory: "256Mi"
+          volumeMounts:
+            - name: tmp-chrome-data
+              mountPath: /tmp/chrome-user-data
+            - name: tmp-crashpad
+              mountPath: /tmp/crashpad
+            - name: tmp-chromium
+              mountPath: /tmp/.chromium
+            - name: mcp-output
+              mountPath: /mcp_output
+      volumes:
+        - name: tmp-chrome-data
+          emptyDir: {}
+        - name: tmp-crashpad
+          emptyDir: {}
+        - name: tmp-chromium
+          emptyDir: {}
+        - name: mcp-output
+          emptyDir:
+            sizeLimit: 1Gi
