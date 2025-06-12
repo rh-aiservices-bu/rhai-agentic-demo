@@ -42,7 +42,9 @@ spec:
               value: granite32-8b
             - name: LLAMA3B_URL
               value: 'https://llama32-3b-llama-serve.apps.prod.rhoai.rh-aiservices-bu.com/v1'
-            - name: VLLM_API_TOKEN
+            - name: GRANITE_VLLM_API_TOKEN
+              value: fake
+            - name: LLAMA_VLLM_API_TOKEN
               value: fake
             - name: MILVUS_DB_PATH
               value: milvus.db

@@ -23,14 +23,14 @@ data:
         config:
           url: ${env.LLAMA3B_URL}
           max_tokens: 128000
-          api_token: fake
+          api_token: ${env.LLAMA_VLLM_API_TOKEN}
           tls_verify: false
       - provider_id: granite
         provider_type: remote::vllm
         config:
           url: ${env.GRANITE_URL}
           max_tokens: 128000
-          api_token: fake
+          api_token: ${env.GRANITE_VLLM_API_TOKEN}
           tls_verify: false
       - provider_id: sentence-transformers
         provider_type: inline::sentence-transformers
