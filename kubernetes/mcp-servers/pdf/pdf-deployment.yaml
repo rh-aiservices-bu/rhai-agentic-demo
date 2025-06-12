@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
         - name: pdf-mcp-server
-          #image: quay.io/rh-aiservices-bu/mcp-servers:pdf
-          image: quay.io/rusrin/rh-aiservices-bu:mcp-servers_pdf_v4
+          image: quay.io/rh-aiservices-bu/mcp-servers:pdf
           imagePullPolicy: Always
           command: ["/bin/sh", "-c"]
           args:

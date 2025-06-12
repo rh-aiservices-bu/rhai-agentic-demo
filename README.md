@@ -4,7 +4,15 @@ Agentic AI Demo Repository for the Red Hat Summit 2025 Booth
 
 ![Demo](./docs/images/demo.gif)
 
-This is a work-in-progress (WIP) repository, and modifications will be made.
+## 🎮 Try the Demo Live!
+
+**Check out the [Demo Arcade](https://interact.redhat.com/share/BgvP9hA8HJrkXtOQbvCj) to see this demo in action!**
+
+Experience the full agentic AI workflow with real-time interactions across multiple systems including CRM, PDF generation, and Slack integrations.
+
+---
+
+*This is a work-in-progress (WIP) repository, and modifications will be made.*
 
 ## 1. Architecture
 
