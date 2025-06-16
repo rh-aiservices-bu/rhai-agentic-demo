@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: docker.io/postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: claimdb
+      POSTGRES_PASSWORD: claimdb
+      POSTGRES_DB: claimdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./import.sql:/docker-entrypoint-initdb.d/import.sql:ro
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claimdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Llama Stack
+  llama-stack:
+    image: docker.io/llamastack/distribution-remote-vllm:0.2.1
+    container_name: llama-stack
+    ports:
+      - "${LLAMA_STACK_PORT:-5001}:${LLAMA_STACK_PORT:-5001}"
+    volumes:
+      - ./${LLAMA_CONFIG:-run-vllm.yaml}:/root/my-run.yaml:ro
+    environment:
+      - INFERENCE_MODEL=${INFERENCE_MODEL:-llama32-3b}
+      - INFERENCE_MODEL2=${INFERENCE_MODEL2:-granite-3-8b-instruct}
+      - VLLM_URL=${LLM_URL:-https://example.com/v1}
+      - VLLM_URL2=${LLM_URL2:-https://example.com/v1}
+      - VLLM_API_TOKEN2=${VLLM_API_TOKEN2:-fake}
+      - VLLM_MAX_TOKENS=${VLLM_MAX_TOKENS:-10000}
+      - VLLM_MAX_TOKENS2=${VLLM_MAX_TOKENS2:-10000}
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.containers.internal:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
+    command: >
+      --port ${LLAMA_STACK_PORT:-5001}
+      --yaml-config /root/my-run.yaml
+      --env INFERENCE_MODEL=${INFERENCE_MODEL:-llama32-3b}
+      --env INFERENCE_MODEL2=${INFERENCE_MODEL2:-granite-3-8b-instruct}
+      --env VLLM_URL=${LLM_URL:-https://example.com/v1}
+      --env VLLM_URL2=${LLM_URL2:-https://example.com/v1}
+      --env VLLM_API_TOKEN2=${VLLM_API_TOKEN2:-fake}
+      --env OLLAMA_URL=${OLLAMA_URL:-http://host.containers.internal:11434}
+      --env OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${LLAMA_STACK_PORT:-5001}/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP CRM Server
+  mcp-crm:
+    image: quay.io/rh-aiservices-bu/mcp-servers:crm
+    container_name: mcp-crm
+    ports:
+      - "8000:8080"
+    environment:
+      - NPM_CONFIG_CACHE=/tmp/.npm
+      - DB_USER=claimdb
+      - DB_PASSWORD=claimdb
+      - DB_HOST=postgres
+      - DB_NAME=claimdb
+    command: ["npx", "-y", "supergateway", "--stdio", "node app/index.js", "--port", "8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP PDF Server
+  mcp-pdf:
+    image: quay.io/rh-aiservices-bu/mcp-servers:pdf
+    container_name: mcp-pdf
+    ports:
+      - "8010:8080"
+    environment:
+      - NPM_CONFIG_CACHE=/tmp/.npm
+      - XDG_CONFIG_HOME=/tmp/.chromium
+      - XDG_CACHE_HOME=/tmp/.chromium
+      - M2P_OUTPUT_DIR=/mcp_output
+    volumes:
+      - pdf_chrome_data:/tmp/chrome-user-data
+      - pdf_crashpad:/tmp/crashpad
+      - pdf_chromium:/tmp/.chromium
+      - pdf_output:/mcp_output
+    command: ["npx", "-y", "supergateway", "--stdio", "node build/index.js", "--port", "8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP Slack Server
+  mcp-slack:
+    image: quay.io/rh-aiservices-bu/mcp-servers:slack
+    container_name: mcp-slack
+    ports:
+      - "8001:8080"
+    environment:
+      - NPM_CONFIG_CACHE=/tmp/.npm
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-xoxb-your-token-here}
+      - SLACK_TEAM_ID=${SLACK_TEAM_ID:-T-your-team-id}
+    command: ["npx", "-y", "supergateway", "--stdio", "node dist/index.js", "--port", "8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MCP Upload Server
+  mcp-upload:
+    image: quay.io/rh-aiservices-bu/mcp-servers:upload
+    container_name: mcp-upload
+    ports:
+      - "8002:8080"
+    environment:
+      - NPM_CONFIG_CACHE=/tmp/.npm
+    command: ["npx", "-y", "supergateway", "--stdio", "node dist/index.js", "--port", "8080"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+
+  # UI Application
+  ui:
+    build:
+      context: ../ui
+      dockerfile: Containerfile
+    container_name: demo-ui
+    ports:
+      - "8501:8501"
+    environment:
+      - LLAMA_STACK_ENDPOINT=http://llama-stack:${LLAMA_STACK_PORT:-5001}
+    depends_on:
+      llama-stack:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  pdf_chrome_data:
+  pdf_crashpad:
+  pdf_chromium:
+  pdf_output:
+
+networks:
+  default:
+    name: llama-stack-network
