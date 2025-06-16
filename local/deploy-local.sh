@@ -97,6 +97,7 @@ setup_environment() {
     if [[ "$USE_OLLAMA" == "true" ]]; then
         print_status "Configuring for Ollama deployment..."
         export LLAMA_CONFIG="run-ollama.yaml"
+        export LLAMA_STACK_IMAGE="docker.io/llamastack/distribution-ollama:0.2.9"
         export INFERENCE_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
         export OLLAMA_URL=${OLLAMA_URL:-http://host.containers.internal:11434}
         export OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
@@ -105,6 +106,7 @@ setup_environment() {
     else
         print_status "Configuring for vLLM deployment..."
         export LLAMA_CONFIG="run-vllm.yaml"
+        export LLAMA_STACK_IMAGE="docker.io/llamastack/distribution-remote-vllm:0.2.9"
         export INFERENCE_MODEL=${INFERENCE_MODEL:-llama32-3b}
         export INFERENCE_MODEL2=${INFERENCE_MODEL2:-granite-3-8b-instruct}
         
@@ -313,10 +315,11 @@ clean_all() {
     print_status "Removing images..."
     images=(
         "quay.io/rh-aiservices-bu/mcp-servers:crm"
-        "quay.io/rh-aiservices-bu/mcp-servers:pdf" 
+        "quay.io/rh-aiservices-bu/mcp-servers:pdf"
         "quay.io/rh-aiservices-bu/mcp-servers:slack"
         "quay.io/rh-aiservices-bu/mcp-servers:upload"
-        "docker.io/llamastack/distribution-remote-vllm:0.2.1"
+        "docker.io/llamastack/distribution-remote-vllm:0.2.9"
+        "docker.io/llamastack/distribution-ollama:0.2.9"
         "localhost/ui:latest"
         "localhost/local_ui:latest"
     )

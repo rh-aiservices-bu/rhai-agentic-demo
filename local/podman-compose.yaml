@@ -22,7 +22,7 @@ services:
 
   # Llama Stack
   llama-stack:
-    image: docker.io/llamastack/distribution-remote-vllm:0.2.1
+    image: ${LLAMA_STACK_IMAGE:-docker.io/llamastack/distribution-remote-vllm:0.2.9}
     container_name: llama-stack
     ports:
       - "${LLAMA_STACK_PORT:-5001}:${LLAMA_STACK_PORT:-5001}"
@@ -51,7 +51,7 @@ services:
       --env OLLAMA_URL=${OLLAMA_URL:-http://host.containers.internal:11434}
       --env OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${LLAMA_STACK_PORT:-5001}/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${LLAMA_STACK_PORT:-5001}/v1/models || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -105,18 +105,21 @@ services:
   mcp-slack:
     image: quay.io/rh-aiservices-bu/mcp-servers:slack
     container_name: mcp-slack
+    entrypoint: ["/bin/sh", "-c"]
+    # Clear the image’s entrypoint entirely:
     ports:
       - "8001:8080"
     environment:
       - NPM_CONFIG_CACHE=/tmp/.npm
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-xoxb-your-token-here}
-      - SLACK_TEAM_ID=${SLACK_TEAM_ID:-T-your-team-id}
-    command: ["npx", "-y", "supergateway", "--stdio", "node dist/index.js", "--port", "8080"]
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_TEAM_ID=${SLACK_TEAM_ID}
+    command: ["npx -y supergateway --stdio 'node dist/index.js' --port 8080"]
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
+
 
   # MCP Upload Server
   mcp-upload:
@@ -148,12 +151,12 @@ services:
     depends_on:
       llama-stack:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8501/_stcore/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8501/_stcore/health || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 60s
 
 volumes:
   postgres_data:

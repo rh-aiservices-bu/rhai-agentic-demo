@@ -120,6 +120,9 @@ export VLLM_API_TOKEN2=your-secondary-api-token
 
 # Register MCP toolgroups
 ./deploy-local.sh register
+
+# Verify toolgroup registration
+./deploy-local.sh checktools
 ```
 
 ### Local deployment with Ollama
@@ -132,6 +135,9 @@ ollama run llama3.2:3b-instruct-fp16 --keepalive 60m
 
 # Register toolgroups
 ./deploy-local.sh register
+
+# Verify toolgroup registration
+./deploy-local.sh checktools
 ```
 
 
@@ -161,6 +167,7 @@ export SLACK_TEAM_ID=T-your-team-id
 | `logs` | Show logs for all services |
 | `status` | Show status of all services |
 | `register` | Register MCP toolgroups with Llama Stack |
+| `checktools` | Check registered toolgroups and show their status |
 | `clean` | Remove all containers and volumes |
 | `reset` | Force cleanup existing containers before deployment |
 
@@ -191,6 +198,10 @@ podman-compose -f podman-compose.yaml restart <service-name>
 
 ### Check MCP registration
 ```bash
+# Using the deploy script
+./deploy-local.sh checktools
+
+# Or manually with curl
 curl http://localhost:5001/v1/toolgroups
 ```
 

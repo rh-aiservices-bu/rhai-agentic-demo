@@ -37,6 +37,10 @@ providers:
         type: sqlite
         namespace: null
         db_path: ${env.SQLITE_STORE_DIR:~/.llama/distributions/ollama}/agents_store.db
+      responses_store:
+        type: sqlite
+        namespace: null
+        db_path: ${env.SQLITE_STORE_DIR:~/.llama/distributions/ollama}/agents_responses_store.db
   telemetry:
   - provider_id: meta-reference
     provider_type: inline::meta-reference
@@ -99,9 +103,6 @@ providers:
     provider_type: remote::wolfram-alpha
     config:
       api_key: ${env.WOLFRAM_ALPHA_API_KEY:}
-  - provider_id: code-interpreter
-    provider_type: inline::code-interpreter
-    config: {}
 metadata_store:
   type: sqlite
   db_path: ${env.SQLITE_STORE_DIR:~/.llama/distributions/ollama}/registry.db
@@ -126,10 +127,6 @@ tool_groups:
   provider_id: tavily-search
 - toolgroup_id: builtin::rag
   provider_id: rag-runtime
-- toolgroup_id: builtin::wolfram_alpha
-  provider_id: wolfram-alpha
-- toolgroup_id: builtin::code_interpreter
-  provider_id: code-interpreter
 server:
   port: 8321
   disable_ipv6: false
