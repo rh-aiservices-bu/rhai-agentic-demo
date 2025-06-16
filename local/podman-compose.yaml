@@ -33,6 +33,7 @@ services:
       - INFERENCE_MODEL2=${INFERENCE_MODEL2:-granite-3-8b-instruct}
       - VLLM_URL=${LLM_URL:-https://example.com/v1}
       - VLLM_URL2=${LLM_URL2:-https://example.com/v1}
+      - VLLM_API_TOKEN=${VLLM_API_TOKEN:-fake}
       - VLLM_API_TOKEN2=${VLLM_API_TOKEN2:-fake}
       - VLLM_MAX_TOKENS=${VLLM_MAX_TOKENS:-10000}
       - VLLM_MAX_TOKENS2=${VLLM_MAX_TOKENS2:-10000}
@@ -45,6 +46,7 @@ services:
       --env INFERENCE_MODEL2=${INFERENCE_MODEL2:-granite-3-8b-instruct}
       --env VLLM_URL=${LLM_URL:-https://example.com/v1}
       --env VLLM_URL2=${LLM_URL2:-https://example.com/v1}
+      --env VLLM_API_TOKEN=${VLLM_API_TOKEN:-fake}
       --env VLLM_API_TOKEN2=${VLLM_API_TOKEN2:-fake}
       --env OLLAMA_URL=${OLLAMA_URL:-http://host.containers.internal:11434}
       --env OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b-instruct-fp16}
@@ -146,6 +148,12 @@ services:
     depends_on:
       llama-stack:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8501/_stcore/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 volumes:
   postgres_data:

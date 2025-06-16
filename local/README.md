@@ -35,7 +35,8 @@ Choose one of the following deployment options based on your preference:
    ```bash
    export LLM_URL=https://your-vllm-endpoint.com/v1
    export LLM_URL2=https://your-second-vllm-endpoint.com/v1
-   export VLLM_API_TOKEN2=your-api-token
+   export VLLM_API_TOKEN=your-primary-api-token
+   export VLLM_API_TOKEN2=your-secondary-api-token
    export INFERENCE_MODEL=llama32-3b
    export INFERENCE_MODEL2=granite-3-8b-instruct
    ```
@@ -96,6 +97,7 @@ Choose one of the following deployment options based on your preference:
 - `LLM_URL2` - Secondary vLLM endpoint URL
 
 ### Optional
+- `VLLM_API_TOKEN` - API token for primary vLLM endpoint
 - `VLLM_API_TOKEN2` - API token for second vLLM endpoint
 - `INFERENCE_MODEL` - Primary model name (default: llama32-3b)
 - `INFERENCE_MODEL2` - Secondary model name (default: granite-3-8b-instruct)
@@ -110,6 +112,8 @@ Choose one of the following deployment options based on your preference:
 # Set up remote endpoints
 export LLM_URL=https://your-vllm-endpoint.com/v1
 export LLM_URL2=https://your-second-vllm-endpoint.com/v1
+export VLLM_API_TOKEN=your-primary-api-token
+export VLLM_API_TOKEN2=your-secondary-api-token
 
 # Start core services
 ./deploy-local.sh up
@@ -158,6 +162,7 @@ export SLACK_TEAM_ID=T-your-team-id
 | `status` | Show status of all services |
 | `register` | Register MCP toolgroups with Llama Stack |
 | `clean` | Remove all containers and volumes |
+| `reset` | Force cleanup existing containers before deployment |
 
 ## Options
 
@@ -191,10 +196,35 @@ curl http://localhost:5001/v1/toolgroups
 
 ### Common Issues
 
-1. **Services not starting**: Check if ports are already in use
-2. **MCP registration fails**: Ensure Llama Stack is healthy before registering
-3. **Database connection errors**: Verify PostgreSQL is running and accessible
-4. **Slack MCP not working**: Check if SLACK_BOT_TOKEN and SLACK_TEAM_ID are set
+1. **Container name conflicts**: If you see "container name already in use" errors:
+   ```bash
+   ./deploy-local.sh reset
+   ./deploy-local.sh up
+   ```
+
+2. **Platform warnings**: If you see "image platform does not match" warnings on ARM64 (Apple Silicon), these are safe to ignore
+
+3. **Services not starting**: Check if ports are already in use:
+   ```bash
+   ./deploy-local.sh status
+   ./deploy-local.sh logs
+   ```
+
+4. **MCP registration fails**: Ensure Llama Stack is healthy before registering:
+   ```bash
+   curl http://localhost:5001/health
+   ./deploy-local.sh register
+   ```
+
+5. **Database connection errors**: Verify PostgreSQL is running and accessible
+
+6. **Slack MCP not working**: Check if SLACK_BOT_TOKEN and SLACK_TEAM_ID are set
+
+7. **Complete cleanup needed**: If services are in an inconsistent state:
+   ```bash
+   ./deploy-local.sh clean
+   ./deploy-local.sh up
+   ```
 
 ### Service Dependencies
 

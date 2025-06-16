@@ -68,7 +68,9 @@ usage() {
     echo "  status    Show status of all services"
     echo "  restart   Restart all services"
     echo "  register  Register MCP toolgroups with Llama Stack"
+    echo "  checktools Check registered toolgroups"
     echo "  clean     Remove all containers and volumes"
+    echo "  reset     Force cleanup existing containers before deployment"
     echo ""
     echo "Options:"
     echo "  --ollama          Use Ollama instead of remote vLLM"
@@ -78,6 +80,7 @@ usage() {
     echo "Environment Variables:"
     echo "  LLM_URL           Remote vLLM endpoint URL"
     echo "  LLM_URL2          Second remote vLLM endpoint URL"
+    echo "  VLLM_API_TOKEN    API token for primary vLLM endpoint"
     echo "  VLLM_API_TOKEN2   API token for second vLLM endpoint"
     echo "  INFERENCE_MODEL   First model name (default: llama32-3b)"
     echo "  INFERENCE_MODEL2  Second model name (default: granite-3-8b-instruct)"
@@ -125,13 +128,39 @@ build_profiles() {
     echo $PROFILES
 }
 
+# Clean up existing containers if they exist
+cleanup_existing_containers() {
+    print_status "Cleaning up existing containers..."
+    
+    # List of container names from our compose
+    containers=("postgres" "llama-stack" "mcp-crm" "mcp-pdf" "mcp-slack" "mcp-upload" "demo-ui")
+    
+    for container in "${containers[@]}"; do
+        if podman container exists "$container" 2>/dev/null; then
+            print_status "Removing existing container: $container"
+            podman rm -f "$container" 2>/dev/null || true
+        fi
+    done
+    
+    # Also clean up any existing pods
+    if podman pod exists llama-stack-network 2>/dev/null; then
+        print_status "Removing existing pod: llama-stack-network"
+        podman pod rm -f llama-stack-network 2>/dev/null || true
+    fi
+}
+
 # Start services
 start_services() {
     print_status "Starting services..."
     
+    
+    
     PROFILES=$(build_profiles)
     
     cd "$(dirname "$0")"
+    
+    # Clean up existing containers first
+    cleanup_existing_containers
     
     print_status "Pulling latest images..."
     $COMPOSE_CMD -f podman-compose.yaml $PROFILES pull
@@ -210,7 +239,7 @@ register_mcp_toolgroups() {
     # Wait for Llama Stack to be ready
     print_status "Waiting for Llama Stack to be ready..."
     timeout=60
-    while ! curl -f http://localhost:$LLAMA_STACK_PORT/health > /dev/null 2>&1; do
+    while ! curl -f http://localhost:$LLAMA_STACK_PORT/v1/models > /dev/null 2>&1; do
         sleep 2
         timeout=$((timeout - 2))
         if [[ $timeout -le 0 ]]; then
@@ -246,18 +275,58 @@ register_mcp_toolgroups() {
     print_success "MCP toolgroups registration completed"
 }
 
+# Check registered toolgroups
+check_registered_tools() {
+    print_status "Checking registered toolgroups..."
+    
+    # Get and display registered toolgroups
+    print_status "Fetching registered toolgroups from http://localhost:$LLAMA_STACK_PORT/v1/toolgroups"
+    curl -s http://localhost:$LLAMA_STACK_PORT/v1/toolgroups | jq '.' 2>/dev/null || {
+        print_warning "jq not available, showing raw output:"
+        curl -s http://localhost:$LLAMA_STACK_PORT/v1/toolgroups
+    }
+}
+
 # Clean up everything
 clean_all() {
     print_status "Cleaning up all containers and volumes..."
     
     cd "$(dirname "$0")"
-    $COMPOSE_CMD -f podman-compose.yaml down -v --remove-orphans
+    
+    # First try compose down
+    $COMPOSE_CMD -f podman-compose.yaml down -v --remove-orphans 2>/dev/null || true
+    
+    # Force cleanup containers
+    cleanup_existing_containers
+    
+    # Remove volumes
+    print_status "Removing volumes..."
+    volumes=("postgres_data" "pdf_chrome_data" "pdf_crashpad" "pdf_chromium" "pdf_output")
+    for volume in "${volumes[@]}"; do
+        if podman volume exists "$volume" 2>/dev/null; then
+            print_status "Removing volume: $volume"
+            podman volume rm -f "$volume" 2>/dev/null || true
+        fi
+    done
     
     # Remove images if they exist
-    podman rmi -f quay.io/rh-aiservices-bu/mcp-servers:crm 2>/dev/null || true
-    podman rmi -f quay.io/rh-aiservices-bu/mcp-servers:pdf 2>/dev/null || true
-    podman rmi -f quay.io/rh-aiservices-bu/mcp-servers:slack 2>/dev/null || true
-    podman rmi -f quay.io/rh-aiservices-bu/mcp-servers:upload 2>/dev/null || true
+    print_status "Removing images..."
+    images=(
+        "quay.io/rh-aiservices-bu/mcp-servers:crm"
+        "quay.io/rh-aiservices-bu/mcp-servers:pdf" 
+        "quay.io/rh-aiservices-bu/mcp-servers:slack"
+        "quay.io/rh-aiservices-bu/mcp-servers:upload"
+        "docker.io/llamastack/distribution-remote-vllm:0.2.1"
+        "localhost/ui:latest"
+        "localhost/local_ui:latest"
+    )
+    
+    for image in "${images[@]}"; do
+        if podman image exists "$image" 2>/dev/null; then
+            print_status "Removing image: $image"
+            podman rmi -f "$image" 2>/dev/null || true
+        fi
+    done
     
     print_success "Cleanup completed"
 }
@@ -277,7 +346,7 @@ while [[ $# -gt 0 ]]; do
             usage
             exit 0
             ;;
-        up|down|logs|status|restart|register|clean)
+        up|down|logs|status|restart|register|clean|reset|checktools)
             COMMAND="$1"
             shift
             ;;
@@ -319,8 +388,14 @@ case $COMMAND in
     register)
         register_mcp_toolgroups
         ;;
+    checktools)
+        check_registered_tools
+        ;;
     clean)
         clean_all
+        ;;
+    reset)
+        cleanup_existing_containers
         ;;
     *)
         print_error "Unknown command: $COMMAND"
