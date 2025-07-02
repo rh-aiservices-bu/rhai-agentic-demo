@@ -1,6 +1,6 @@
-# Red Hat Summit Agentic Demo
+# Red Hat AI Agentic Demo
 
-Agentic AI Demo Repository for the Red Hat Summit 2025 Booth
+Red Hat Agentic AI Demo Repository for ParaCloud
 
 ![Demo](./docs/images/demo.gif)
 
