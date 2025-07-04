@@ -73,5 +73,5 @@ Determine the status of the account, e.g. unhappy, happy etc. based on the cases
 Send a slack message to agentic-ai-slack with the status of the account
 Generate a PDF document with a summary of the support cases and the account status
 Upload the pdf 
-Send the link to the agentic-ai-slack channel
+Send the link to the agentic-ai-slack channel with the pdf url
 ```

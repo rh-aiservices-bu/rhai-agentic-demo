@@ -11,3 +11,7 @@ spec:
     kind: Service
     name: reports-repo
     weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
