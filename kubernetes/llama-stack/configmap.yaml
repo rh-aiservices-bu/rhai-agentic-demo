@@ -140,16 +140,16 @@ data:
     - toolgroup_id: mcp::pdf
       provider_id: model-context-protocol
       mcp_endpoint:
-       uri: "http://pdf-mcp-server.llama-serve.svc.cluster.local:8010/sse"
+       uri: "http://pdf-mcp-server:8010/sse"
     - toolgroup_id: mcp::slack
       provider_id: model-context-protocol
       mcp_endpoint:
-       uri: "http://slack-mcp-server.llama-serve.svc.cluster.local:8080/sse"
+       uri: "http://slack-mcp-server:8080/sse"
     - toolgroup_id: mcp::crm
       provider_id: model-context-protocol
       mcp_endpoint:
-       uri: "http://crm-mcp-server.llama-serve.svc.cluster.local:8080/sse"
+       uri: "http://crm-mcp-server:8080/sse"
     - toolgroup_id: mcp::upload
       provider_id: model-context-protocol
       mcp_endpoint:
-       uri: "http://upload-mcp-server.llama-serve.svc.cluster.local:8080/sse"
+       uri: "http://upload-mcp-server:8080/sse"

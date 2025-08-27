@@ -47,7 +47,7 @@ The demo architecture consists of the following components:
 To deploy the demo on your OpenShift environment:
 
 ```sh
-oc apply -k kubernetes/deploy-demo
+oc apply -k kubernetes/deploy-demo/base
 ```
 
 The demo topology diagram in OpenShift is the following:
