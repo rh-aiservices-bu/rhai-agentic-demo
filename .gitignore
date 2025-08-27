@@ -173,6 +173,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
+.secret.yaml
 node_modules
 .DS_Store
