@@ -8,6 +8,7 @@ metadata:
     #security.opendatahub.io/enable-auth: 'false'
     #sidecar.istio.io/inject: 'false'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+    serving.kserve.io/deploymentMode: RawDeployment
   name: granite32-8b
   finalizers:
     - inferenceservice.finalizers

@@ -37,11 +37,11 @@ spec:
             - name: LLAMA3B_MODEL
               value: llama32-3b
             - name: GRANITE_URL
-              value: 'https://granite32-8b-llama-serve.apps.prod.rhoai.rh-aiservices-bu.com/v1'
+              value: 'http://granite32-8b-predictor:8080/v1'
             - name: GRANITE_MODEL
               value: granite32-8b
             - name: LLAMA3B_URL
-              value: 'https://llama32-3b-llama-serve.apps.prod.rhoai.rh-aiservices-bu.com/v1'
+              value: 'http://llama32-3b-predictor:8080/v1'
             - name: GRANITE_VLLM_API_TOKEN
               value: fake
             - name: LLAMA_VLLM_API_TOKEN
