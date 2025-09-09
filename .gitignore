@@ -176,3 +176,4 @@ cython_debug/
 .secret.yaml
 node_modules
 .DS_Store
+.env
