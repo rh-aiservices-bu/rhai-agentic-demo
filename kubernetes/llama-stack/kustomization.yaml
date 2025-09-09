@@ -5,5 +5,5 @@ resources:
   - pvc.yaml
   - route.yaml
   - service.yaml
-  - deployment.yaml
+  - llamastack-distribution.yaml
   - configmap.yaml

@@ -1,0 +1,62 @@
+apiVersion: llamastack.io/v1alpha1
+kind: LlamaStackDistribution
+metadata:
+  name: llamastack
+spec:
+  replicas: 1
+  server:
+    containerSpec:
+      env:
+        - name: MAX_TOKENS
+          value: '128000'
+        - name: VLLM_MAX_TOKENS
+          value: '128000'
+        - name: LLAMA3B_MODEL
+          value: llama32-3b
+        - name: GRANITE_URL
+          value: 'http://granite32-8b-predictor:8080/v1'
+        - name: GRANITE_MODEL
+          value: granite32-8b
+        - name: LLAMA3B_URL
+          value: 'http://llama32-3b-predictor:8080/v1'
+        - name: GRANITE_VLLM_API_TOKEN
+          value: fake
+        - name: LLAMA_VLLM_API_TOKEN
+          value: fake
+        - name: MILVUS_DB_PATH
+          value: milvus.db
+        - name: LLAMA_STACK_LOG
+          value: debug
+        - name: OTEL_SERVICE_NAME
+          value: llamastack
+      image: 'quay.io/redhat-et/llama:vllm-0.2.2'
+      name: llama-stack
+      port: 8321
+      volumeMounts:
+        - name: pythain
+          mountPath: /pythainlp-data
+        - name: run-config-volume
+          mountPath: /app-config
+        - name: llama-persist
+          mountPath: /.llama
+        - name: cache
+          mountPath: /.cache
+      args:
+        - '--config'
+        - /app-config/run.yaml
+    distribution:
+      name: remote-vllm
+    userConfig:
+      configMapName: run-config
+    volumes:
+      - name: run-config-volume
+        configMap:
+          name: run-config
+          defaultMode: 420
+      - name: llama-persist
+        persistentVolumeClaim:
+          claimName: llama-persist
+      - name: cache
+        emptyDir: {}
+      - name: pythain
+        emptyDir: {}
