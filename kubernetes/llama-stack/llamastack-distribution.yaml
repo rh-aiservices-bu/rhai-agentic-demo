@@ -11,7 +11,7 @@ spec:
           value: '128000'
         - name: VLLM_MAX_TOKENS
           value: '128000'
-        - name: LLAMA3B_MODEL
+        - name: INFERENCE_MODEL
           value: llama32-3b
         - name: GRANITE_URL
           value: 'http://granite32-8b-predictor:8080/v1'
@@ -29,34 +29,11 @@ spec:
           value: debug
         - name: OTEL_SERVICE_NAME
           value: llamastack
-      image: 'quay.io/redhat-et/llama:vllm-0.2.2'
+        - name: FMS_ORCHESTRATOR_URL
+          value: http://localhost:8080
       name: llama-stack
       port: 8321
-      volumeMounts:
-        - name: pythain
-          mountPath: /pythainlp-data
-        - name: run-config-volume
-          mountPath: /app-config
-        - name: llama-persist
-          mountPath: /.llama
-        - name: cache
-          mountPath: /.cache
-      args:
-        - '--config'
-        - /app-config/run.yaml
     distribution:
-      name: remote-vllm
+      name: rh-dev
     userConfig:
-      configMapName: run-config
-    volumes:
-      - name: run-config-volume
-        configMap:
-          name: run-config
-          defaultMode: 420
-      - name: llama-persist
-        persistentVolumeClaim:
-          claimName: llama-persist
-      - name: cache
-        emptyDir: {}
-      - name: pythain
-        emptyDir: {}
+      configMapName: llama-stack-config
