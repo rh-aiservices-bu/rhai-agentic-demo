@@ -18,16 +18,18 @@ spec:
               value: "granite-3-3-8b-instruct"
             
             # External MaaS endpoint URLs
+            # TODO: Update these URLs to point to your actual MaaS endpoints
             - name: LLAMA3B_URL
-              value: "https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1"
+              value: "https://your-maas-llama-3-2-3b-endpoint.com/v1"
             - name: GRANITE_URL
-              value: "https://granite-3-3-8b-instruct-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1"
+              value: "https://your-maas-granite-3-3-8b-endpoint.com/v1"
             
             # API tokens for MaaS endpoints
+            # TODO: Update these with actual API tokens or use secrets
             - name: LLAMA_VLLM_API_TOKEN
-              value: "8cd4e17fa115ac7bac0021a88f8ad804"
+              value: "your-llama-api-token"
             - name: GRANITE_VLLM_API_TOKEN
-              value: "039b626723926a5750632d695f9b8ad1"
+              value: "your-granite-api-token"
             
             # Keep other configuration
             - name: MAX_TOKENS

@@ -87,5 +87,5 @@ oc logs deployment/llamastack-deployment -n $NAMESPACE
 oc exec deployment/llamastack-deployment -n $NAMESPACE -- curl -s http://localhost:8321/v1/models
 
 # Get demo UI URL to access the application
-oc get route -n $NAMESPACE ui --template='https://{{.spec.host}}'
+oc get route -n $NAMESPACE ui --template='https://{{.spec.host}}{{"\n"}}'
 ```
