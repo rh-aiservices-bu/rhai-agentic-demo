@@ -4,6 +4,7 @@ metadata:
   name: pdf-mcp-server
   labels:
     app: pdf-mcp-server
+    app.kubernetes.io/part-of: mcp-servers
 spec:
   replicas: 1
   selector:

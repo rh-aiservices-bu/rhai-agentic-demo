@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
+  labels:
+    app.kubernetes.io/part-of: crm
 spec:
   replicas: 1
   selector:
