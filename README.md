@@ -47,8 +47,44 @@ The demo architecture consists of the following components:
 To deploy the demo on your OpenShift environment:
 
 ```sh
-oc apply -k kubernetes/deploy-demo/base
+# Set namespace variable
+export NAMESPACE=rhai-agentic-demo
 ```
+
+**Default deployment (with local GPU inference):**
+```sh
+# Create namespace first
+oc create namespace $NAMESPACE
+
+# Deploy to namespace
+oc apply -k kubernetes/deploy-demo/overlays/default
+```
+
+**Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
+
+See [MaaS configuration guide](./docs/maas.md) for setup instructions.
+
+```sh
+# Create namespace first
+oc create namespace $NAMESPACE
+
+# Deploy to namespace
+oc apply -k kubernetes/deploy-demo/overlays/maas
+```
+
+### 2.3 Access the Demo
+
+After deployment, get the UI route to access the demo:
+
+```sh
+# Get the demo UI URL
+oc get route -n $NAMESPACE ui --template='https://{{.spec.host}}{{"\n"}}'
+
+# Or get route with grep
+oc get route -n $NAMESPACE | grep ui
+```
+
+Access the demo using the URL from the route output.
 
 The demo topology diagram in OpenShift is the following:
 

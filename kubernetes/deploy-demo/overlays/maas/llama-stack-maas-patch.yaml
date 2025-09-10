@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamastack-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: llamastack
+          env:
+            # Models as a Service configuration
+            # Replace local inference service URLs with external MaaS endpoints
+            
+            # Model identifiers
+            - name: LLAMA3B_MODEL
+              value: "llama-3-2-3b"
+            - name: GRANITE_MODEL
+              value: "granite-3-3-8b-instruct"
+            
+            # External MaaS endpoint URLs
+            # TODO: Update these URLs to point to your actual MaaS endpoints
+            - name: LLAMA3B_URL
+              value: "https://your-maas-llama-3-2-3b-endpoint.com/v1"
+            - name: GRANITE_URL
+              value: "https://your-maas-granite-3-3-8b-endpoint.com/v1"
+            
+            # API tokens for MaaS endpoints
+            # TODO: Update these with actual API tokens or use secrets
+            - name: LLAMA_VLLM_API_TOKEN
+              value: "your-llama-api-token"
+            - name: GRANITE_VLLM_API_TOKEN
+              value: "your-granite-api-token"
+            
+            # Keep other configuration
+            - name: MAX_TOKENS
+              value: "120000"
+            - name: VLLM_MAX_TOKENS
+              value: "120000"
+            - name: MILVUS_DB_PATH
+              value: "milvus.db"
+            - name: LLAMA_STACK_LOG
+              value: "debug"
