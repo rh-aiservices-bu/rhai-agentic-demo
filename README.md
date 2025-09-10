@@ -46,8 +46,16 @@ The demo architecture consists of the following components:
 
 To deploy the demo on your OpenShift environment:
 
+**Default deployment (with local GPU inference):**
 ```sh
-oc apply -k kubernetes/deploy-demo/base
+oc apply -k kubernetes/deploy-demo/overlays/default
+```
+
+**Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
+```sh
+# First, update the MaaS endpoints in kubernetes/deploy-demo/overlays/maas/llama-stack-maas-patch.yaml
+# Then deploy:
+oc apply -k kubernetes/deploy-demo/overlays/maas
 ```
 
 The demo topology diagram in OpenShift is the following:
