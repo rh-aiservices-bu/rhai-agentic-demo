@@ -59,42 +59,43 @@ Before deploying, configure the integrations:
    export SLACK_TEAM_ID="your-slack-team-id"
    ```
 
-**Default deployment (with local GPU inference):**
-```sh
-# Create namespace first
-oc create namespace $NAMESPACE
+2. **Update the Slack secret configuration**:
+   ```sh
+   envsubst < kubernetes/mcp-servers/slack/slack-secret.yaml | oc apply -f -
+   ```
 
-# Deploy to namespace
-oc apply -k kubernetes/deploy-demo/overlays/default
-```
-
-**Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
-
-See [MaaS configuration guide](./docs/maas.md) for setup instructions.
-
-```sh
-# Create namespace first
-oc create namespace $NAMESPACE
-
-# Deploy to namespace
-oc apply -k kubernetes/deploy-demo/overlays/maas
-```
+3. **Configure PDF Route URL** (update the route URL in the PDF deployment):
+   ```sh
+   # Get your OpenShift cluster's domain
+   PDF_ROUTE_URL="https://pdf-files-$(oc config view --minify -o jsonpath='{..namespace}').apps.your-cluster-domain.com"
+   
+   # Update the PDF deployment with your route URL
+   sed -i "s|https://pdf-files-ph-scratch.apps.dev.rhoai.rh-aiservices-bu.com|${PDF_ROUTE_URL}|g" kubernetes/mcp-servers/pdf/pdf-deployment.yaml
+   ```
 
 4. **Deploy the demo**:
+
+   **Default deployment (with local GPU inference):**
    ```sh
+   # Create namespace first
+   oc create namespace $NAMESPACE
+
+   # Deploy to namespace
    oc apply -k kubernetes/deploy-demo/overlays/default
    ```
-**Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
 
-See [MaaS configuration guide](./docs/maas.md) for setup instructions.
+   **Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
 
-```sh
-# Create namespace first
-oc create namespace $NAMESPACE
+   See [MaaS configuration guide](./docs/maas.md) for setup instructions.
 
-# Deploy to namespace
-oc apply -k kubernetes/deploy-demo/overlays/maas
-```
+   ```sh
+   # Create namespace first
+   oc create namespace $NAMESPACE
+
+   # Deploy to namespace
+   oc apply -k kubernetes/deploy-demo/overlays/maas
+   ```
+
 #### How to get Slack credentials:
 
 - **SLACK_BOT_TOKEN**: Create a Slack app at https://api.slack.com/apps, go to "OAuth & Permissions", and copy the "Bot User OAuth Token" (starts with `xoxb-`)
