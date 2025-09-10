@@ -44,12 +44,20 @@ The demo architecture consists of the following components:
 
 ### 2.2 Deploy the demo in OpenShift / OpenShift AI
 
-To deploy the demo on your OpenShift environment:
-
 ```sh
-# Set namespace variable
 export NAMESPACE=rhai-agentic-demo
+
+oc create namespace $NAMESPACE
 ```
+
+
+Before deploying, configure the integrations:
+
+1. **Set up Slack Bot Token and Team ID**:
+   ```sh
+   export SLACK_BOT_TOKEN="xoxb-your-slack-bot-token"
+   export SLACK_TEAM_ID="your-slack-team-id"
+   ```
 
 **Default deployment (with local GPU inference):**
 ```sh
@@ -72,6 +80,38 @@ oc create namespace $NAMESPACE
 oc apply -k kubernetes/deploy-demo/overlays/maas
 ```
 
+4. **Deploy the demo**:
+   ```sh
+   oc apply -k kubernetes/deploy-demo/overlays/default
+   ```
+**Don't have GPUs in your cluster? Want to use MaaS (Models as a Service)?**
+
+See [MaaS configuration guide](./docs/maas.md) for setup instructions.
+
+```sh
+# Create namespace first
+oc create namespace $NAMESPACE
+
+# Deploy to namespace
+oc apply -k kubernetes/deploy-demo/overlays/maas
+```
+#### How to get Slack credentials:
+
+- **SLACK_BOT_TOKEN**: Create a Slack app at https://api.slack.com/apps, go to "OAuth & Permissions", and copy the "Bot User OAuth Token" (starts with `xoxb-`)
+- **SLACK_TEAM_ID**: Found in your Slack workspace URL (e.g., `https://your-team-id.slack.com`) or in your app's "Basic Information" page
+
+The demo topology diagram in OpenShift is the following:
+
+![Demo Topology Diagram](./docs/images/demo1.png)
+
+and the LLMs used in this demo deployed in OpenShift AI are the following:
+
+![Models Deployed](./docs/images/demo3.png)
+
+### 2.2 Deploy the demo locally
+
+If you prefer to run the demo locally for development or testing purposes, follow the instructions in the [local deployment guide](./docs/deploy-demo-local.md)
+
 ### 2.3 Access the Demo
 
 After deployment, get the UI route to access the demo:
@@ -85,18 +125,6 @@ oc get route -n $NAMESPACE | grep ui
 ```
 
 Access the demo using the URL from the route output.
-
-The demo topology diagram in OpenShift is the following:
-
-![Demo Topology Diagram](./docs/images/demo1.png)
-
-and the LLMs used in this demo deployed in OpenShift AI are the following:
-
-![Models Deployed](./docs/images/demo3.png)
-
-### 2.2 Deploy the demo locally
-
-If you prefer to run the demo locally for development or testing purposes, follow the instructions in the [local deployment guide](./docs/deploy-demo-local.md)
 
 ## 3. Sample Requests
 
