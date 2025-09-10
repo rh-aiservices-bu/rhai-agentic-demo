@@ -177,9 +177,15 @@ cython_debug/
 node_modules
 .DS_Store
 <<<<<<< HEAD
+<<<<<<< HEAD
 .env
 =======
 
 .vscode/
 CLAUDE.md
 >>>>>>> 617d66d (added maas)
+=======
+
+.vscode/
+CLAUDE.md
+>>>>>>> 0efc7d1da30ce3bdaf2e042fd87945c783b9bdf3
