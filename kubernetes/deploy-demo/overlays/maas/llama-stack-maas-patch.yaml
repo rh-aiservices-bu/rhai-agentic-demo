@@ -33,9 +33,9 @@ spec:
             
             # Keep other configuration
             - name: MAX_TOKENS
-              value: "128000"
+              value: "120000"
             - name: VLLM_MAX_TOKENS
-              value: "128000"
+              value: "120000"
             - name: MILVUS_DB_PATH
               value: "milvus.db"
             - name: LLAMA_STACK_LOG
