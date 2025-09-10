@@ -2,6 +2,10 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: llamastack-deployment
+  labels:
+    app.kubernetes.io/part-of: llama-stack
+  annotations:
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"crm-mcp-server"},{"apiVersion":"apps/v1","kind":"Deployment","name":"pdf-mcp-server"},{"apiVersion":"apps/v1","kind":"Deployment","name":"slack-mcp-server"},{"apiVersion":"apps/v1","kind":"Deployment","name":"upload-mcp-server"}]'
 spec:
   replicas: 1
   selector:

@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: slack-mcp-server
+  name: upload-mcp-server
   labels:
-    app: slack-mcp-server
+    app: upload-mcp-server
     app.kubernetes.io/part-of: mcp-servers
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: slack-mcp-server
+      app: upload-mcp-server
   template:
     metadata:
       labels:
-        app: slack-mcp-server
+        app: upload-mcp-server
     spec:
       containers:
-      - name: slack-mcp-server
-        image: quay.io/rh-aiservices-bu/mcp-servers:slack
+      - name: upload-mcp-server
+        image: quay.io/rh-aiservices-bu/mcp-servers:upload
         imagePullPolicy: Always
         command: ["/bin/sh", "-c"]
         args:
@@ -29,16 +29,6 @@ spec:
         env:
         - name: NPM_CONFIG_CACHE
           value: /tmp/.npm
-        - name: SLACK_BOT_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: slack-mcp-server-secrets
-              key: SLACK_BOT_TOKEN
-        - name: SLACK_TEAM_ID
-          valueFrom:
-            secretKeyRef:
-              name: slack-mcp-server-secrets
-              key: SLACK_TEAM_ID
         resources:
           limits:
             cpu: "500m"
