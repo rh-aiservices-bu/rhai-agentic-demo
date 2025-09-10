@@ -67,9 +67,9 @@ If you prefer to run the demo locally for development or testing purposes, follo
 Here are some example prompts to interact with the system:
 
 ```
-Review the current opportunities for ACME
+Review the current opportunities for ACME corp
 Get a list of support cases for the account
 Determine the status of the account, e.g. unhappy, happy etc. based on the cases
 Generate a PDF document with a summary of the support cases and the account status.
-Send a summary of the account plus a link to download the pdf via slack to the crtical-accounts channel
+Send a summary of the account plus a link to download the pdf via slack to the general channel
 ```
