@@ -25,15 +25,11 @@ spec:
         - '--chat-template'
         - /app/data/template/tool_chat_template_llama3.2_json.jinja
         - '--max-model-len'
-        - '16000'
-      command:
-        - python
-        - '-m'
-        - vllm.entrypoints.openai.api_server
+        - '128000'
       env:
         - name: HF_HOME
           value: /tmp/hf_home
-      image: 'quay.io/modh/vllm@sha256:0d55419f3d168fd80868a36ac89815dded9e063937a8409b7edf3529771383f3'
+      image: 'registry.redhat.io/rhaiis/vllm-cuda-rhel9:3.2.0-1754088865-hotfix-1'
       name: kserve-container
       ports:
         - containerPort: 8080

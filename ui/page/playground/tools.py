@@ -100,8 +100,8 @@ def tool_chat_page():
             max_tokens = st.slider(
                 "Max Tokens",
                 min_value=0,
-                max_value=9000,
-                value=9000,
+                max_value=15000,
+                value=15000,
                 step=1,
                 help="The maximum number of tokens to generate",
                 on_change=reset_agent,

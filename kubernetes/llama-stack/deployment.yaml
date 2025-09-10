@@ -64,7 +64,7 @@ spec:
             - name: cache
               mountPath: /.cache
           terminationMessagePolicy: File
-          image: 'quay.io/redhat-et/llama:vllm-0.2.2'
+          image: 'llamastack/distribution-remote-vllm:0.2.12'
           args:
             - '--config'
             - /app-config/config.yaml

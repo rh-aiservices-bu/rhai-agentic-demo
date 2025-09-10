@@ -34,4 +34,4 @@ spec:
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
-        value: NVIDIA-A10G-SHARED
+        value: NVIDIA-L40-SHARED
