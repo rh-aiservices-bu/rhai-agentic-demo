@@ -4,9 +4,12 @@ metadata:
   name: crm-mcp-server
   labels:
     app: crm-mcp-server
+    app.kubernetes.io/component: crm-mcp-server
+    app.kubernetes.io/instance: crm-mcp-server
+    app.kubernetes.io/name: crm-mcp-server
     app.kubernetes.io/part-of: mcp-servers
   annotations:
-    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"postgresql"}]'
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"crm"}]'
 spec:
   replicas: 1
   selector:
