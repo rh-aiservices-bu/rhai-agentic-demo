@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
   - pdf-deployment.yaml
   - pdf-service.yaml
+  - pdf-files-route.yaml
+  - nginx-configmap.yaml

@@ -6,11 +6,9 @@ resources:
 #  - ../../llama-serve/hpu-llama3.2-3b
 #  - ../../llama-serve/hpu-granite3.2-8b
   - ../../llama-stack
-  - ../../reports-repo
   - ../../crm
   - ../../database
   - ../../ui
   - ../../mcp-servers/crm
   - ../../mcp-servers/slack
   - ../../mcp-servers/pdf
-  - ../../mcp-servers/upload

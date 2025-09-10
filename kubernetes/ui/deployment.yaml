@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: ui
-          image: quay.io/rh-aiservices-bu/rh-summit-agentic-demo-ui:v4
+          image: quay.io/rh-aiservices-bu/rh-summit-agentic-demo-ui:v5
           ports:
             - containerPort: 8080
               protocol: TCP

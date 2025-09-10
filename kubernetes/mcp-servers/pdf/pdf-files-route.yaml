@@ -1,17 +1,17 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  name: pdf-files
   labels:
-    app: reports-repo
-  name: reports-repo
+    app: pdf-mcp-server
 spec:
-  port:
-    targetPort: 8080-tcp
   to:
     kind: Service
-    name: reports-repo
+    name: pdf-mcp-server
     weight: 100
+  port:
+    targetPort: nginx
   tls:
     termination: edge
-    insecureEdgeTerminationPolicy: Redirect
+    insecureEdgeTerminationPolicy: None
   wildcardPolicy: None

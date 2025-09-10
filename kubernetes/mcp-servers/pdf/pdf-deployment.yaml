@@ -18,12 +18,10 @@ spec:
         - name: pdf-mcp-server
           image: quay.io/rh-aiservices-bu/mcp-servers:pdf
           imagePullPolicy: Always
-          command: ["/bin/sh", "-c"]
-          args:
-            - npx -y supergateway --stdio "node build/index.js" --port 8010
           ports:
-            - containerPort: 8080
+            - containerPort: 8010
               protocol: TCP
+              name: mcp-server
           env:
             - name: NPM_CONFIG_CACHE
               value: /tmp/.npm
@@ -33,6 +31,8 @@ spec:
               value: "/tmp/.chromium"
             - name: M2P_OUTPUT_DIR
               value: "/mcp_output"
+            - name: PDF_ROUTE_URL
+              value: "https://pdf-files-ph-scratch.apps.dev.rhoai.rh-aiservices-bu.com"
           resources:
             limits:
               cpu: "500m"
@@ -49,6 +49,32 @@ spec:
               mountPath: /tmp/.chromium
             - name: mcp-output
               mountPath: /mcp_output
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: nginx
+          command: ["/bin/sh", "-c"]
+          args: 
+            - |
+              mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp
+              nginx -g "daemon off;"
+          volumeMounts:
+            - name: mcp-output
+              mountPath: /usr/share/nginx/html/files
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: nginx-temp
+              mountPath: /tmp
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
       volumes:
         - name: tmp-chrome-data
           emptyDir: {}
@@ -59,3 +85,8 @@ spec:
         - name: mcp-output
           emptyDir:
             sizeLimit: 1Gi
+        - name: nginx-config
+          configMap:
+            name: nginx-pdf-config
+        - name: nginx-temp
+          emptyDir: {}

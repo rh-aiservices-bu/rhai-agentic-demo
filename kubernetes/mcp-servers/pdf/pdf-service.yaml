@@ -10,3 +10,7 @@ spec:
   ports:
   - port: 8010
     targetPort: 8010
+    name: mcp-server
+  - port: 8080
+    targetPort: 8080
+    name: nginx
