@@ -7,7 +7,9 @@ metadata:
     app.kubernetes.io/component: crm
     app.kubernetes.io/instance: crm
     app.kubernetes.io/name: crm
-    app.kubernetes.io/part-of: crm-app
+    app.kubernetes.io/part-of: crm
+  annotations:
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"postgresql"}]'
 spec:
   replicas: 1
   selector:

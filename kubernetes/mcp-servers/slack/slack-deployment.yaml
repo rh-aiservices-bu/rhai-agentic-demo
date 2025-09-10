@@ -4,6 +4,7 @@ metadata:
   name: slack-mcp-server
   labels:
     app: slack-mcp-server
+    app.kubernetes.io/part-of: mcp-servers
 spec:
   replicas: 1
   selector:

@@ -4,6 +4,7 @@ metadata:
   name: upload-mcp-server
   labels:
     app: upload-mcp-server
+    app.kubernetes.io/part-of: mcp-servers
 spec:
   replicas: 1
   selector:
