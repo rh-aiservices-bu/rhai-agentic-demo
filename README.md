@@ -78,7 +78,7 @@ After deployment, get the UI route to access the demo:
 
 ```sh
 # Get the demo UI URL
-oc get route -n $NAMESPACE ui --template='https://{{.spec.host}}'
+oc get route -n $NAMESPACE ui --template='https://{{.spec.host}}{{"\n"}}'
 
 # Or get route with grep
 oc get route -n $NAMESPACE | grep ui
