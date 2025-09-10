@@ -176,4 +176,10 @@ cython_debug/
 .secret.yaml
 node_modules
 .DS_Store
+<<<<<<< HEAD
 .env
+=======
+
+.vscode/
+CLAUDE.md
+>>>>>>> 617d66d (added maas)
