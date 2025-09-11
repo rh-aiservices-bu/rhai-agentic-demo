@@ -25,7 +25,7 @@ spec:
         - '--chat-template'
         - /app/data/template/tool_chat_template_llama3.2_json.jinja
         - '--max-model-len'
-        - '128000'
+        - '110000'
       env:
         - name: HF_HOME
           value: /tmp/hf_home
