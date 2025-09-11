@@ -59,6 +59,11 @@ Before deploying, configure the integrations:
    export SLACK_TEAM_ID="your-slack-team-id"
    ```
 
+#### How to get Slack credentials:
+
+- **SLACK_BOT_TOKEN**: Create a Slack app at https://api.slack.com/apps, go to "OAuth & Permissions", and copy the "Bot User OAuth Token" (starts with `xoxb-`)
+- **SLACK_TEAM_ID**: Found in your Slack workspace URL (e.g., `https://your-team-id.slack.com`) or in your app's "Basic Information" page
+
 2. **Update the Slack secret configuration**:
    ```sh
    envsubst < kubernetes/mcp-servers/slack/slack-secret.yaml | oc apply -f -
@@ -77,9 +82,6 @@ Before deploying, configure the integrations:
 
    **Default deployment (with local GPU inference):**
    ```sh
-   # Create namespace first
-   oc create namespace $NAMESPACE
-
    # Deploy to namespace
    oc apply -k kubernetes/deploy-demo/overlays/default
    ```
@@ -89,17 +91,9 @@ Before deploying, configure the integrations:
    See [MaaS configuration guide](./docs/maas.md) for setup instructions.
 
    ```sh
-   # Create namespace first
-   oc create namespace $NAMESPACE
-
    # Deploy to namespace
    oc apply -k kubernetes/deploy-demo/overlays/maas
    ```
-
-#### How to get Slack credentials:
-
-- **SLACK_BOT_TOKEN**: Create a Slack app at https://api.slack.com/apps, go to "OAuth & Permissions", and copy the "Bot User OAuth Token" (starts with `xoxb-`)
-- **SLACK_TEAM_ID**: Found in your Slack workspace URL (e.g., `https://your-team-id.slack.com`) or in your app's "Basic Information" page
 
 The demo topology diagram in OpenShift is the following:
 
