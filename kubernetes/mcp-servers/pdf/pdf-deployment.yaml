@@ -33,7 +33,7 @@ spec:
             - name: M2P_OUTPUT_DIR
               value: "/mcp_output"
             - name: PDF_ROUTE_URL
-              value: "https://pdf-files-ph-scratch.apps.dev.rhoai.rh-aiservices-bu.com"
+              value: "https://pdf-files-NAMESPACE.apps.CLUSTER-DOMAIN.com"
           resources:
             limits:
               cpu: "500m"

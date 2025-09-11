@@ -4,6 +4,8 @@ kind: Kustomization
 # MaaS (Models as a Service) overlay: excludes LLM inference services (llama-serve)
 # Use this when connecting to external model endpoints instead of deploying locally
 
+namespace: rhai-agentic-demo
+
 # Only include supporting services, exclude llama-serve components
 resources:
   - ../../../llama-stack
