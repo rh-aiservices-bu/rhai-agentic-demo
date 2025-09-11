@@ -32,10 +32,10 @@ spec:
               value: "your-granite-api-token"
             
             # Keep other configuration
-            - name: MAX_TOKENS
-              value: "120000"
-            - name: VLLM_MAX_TOKENS
-              value: "120000"
+            - name: LLAMA_MAX_TOKENS
+              value: "110000"
+            - name: GRANITE_MAX_TOKENS
+              value: "25000"
             - name: MILVUS_DB_PATH
               value: "milvus.db"
             - name: LLAMA_STACK_LOG

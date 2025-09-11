@@ -34,10 +34,10 @@ spec:
           terminationMessagePath: /dev/termination-log
           name: llamastack
           env:
-            - name: MAX_TOKENS
-              value: '128000'
-            - name: VLLM_MAX_TOKENS
-              value: '128000'
+            - name: LLAMA_MAX_TOKENS
+              value: '110000'
+            - name: GRANITE_MAX_TOKENS
+              value: '25000'
             - name: LLAMA3B_MODEL
               value: llama32-3b
             - name: GRANITE_URL

@@ -66,11 +66,14 @@ Before deploying, configure the integrations:
 
 3. **Configure PDF Route URL** (update the route URL in the PDF deployment):
    ```sh
-   # Get your OpenShift cluster's domain
-   PDF_ROUTE_URL="https://pdf-files-$(oc config view --minify -o jsonpath='{..namespace}').apps.your-cluster-domain.com"
+   # Get your OpenShift cluster's domain from console URL
+   CONSOLE_URL=$(oc whoami --show-console)
+   CLUSTER_DOMAIN=$(echo $CONSOLE_URL | cut -d'/' -f3 | sed 's/console-openshift-console\.apps\.//')
+   NAMESPACE=$(oc project -q)
+   PDF_ROUTE_URL="https://pdf-files-${NAMESPACE}.apps.${CLUSTER_DOMAIN}"
    
    # Update the PDF deployment with your route URL
-   sed -i "s|https://pdf-files-ph-scratch.apps.dev.rhoai.rh-aiservices-bu.com|${PDF_ROUTE_URL}|g" kubernetes/mcp-servers/pdf/pdf-deployment.yaml
+   sed -i '' "s|https://pdf-files-NAMESPACE.apps.CLUSTER-DOMAIN.com|${PDF_ROUTE_URL}|g" kubernetes/mcp-servers/pdf/pdf-deployment.yaml
    ```
 
 4. **Deploy the demo**:

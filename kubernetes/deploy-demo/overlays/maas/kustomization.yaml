@@ -9,14 +9,12 @@ namespace: rhai-agentic-demo
 # Only include supporting services, exclude llama-serve components
 resources:
   - ../../../llama-stack
-  - ../../../reports-repo
   - ../../../crm
   - ../../../database
   - ../../../ui
   - ../../../mcp-servers/crm
   - ../../../mcp-servers/slack
   - ../../../mcp-servers/pdf
-  - ../../../mcp-servers/upload
 
 # Patch environment variables for external model endpoints
 patches:
