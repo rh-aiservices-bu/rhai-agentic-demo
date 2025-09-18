@@ -34,7 +34,5 @@ spec:
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
-        value: NVIDIA-L40-SHARED
-      - effect: NoSchedule
-        key: nvidia.com/gpu
-        value: NVIDIA-L40S-SHARED
+        value: "True"
+        operator: Equal

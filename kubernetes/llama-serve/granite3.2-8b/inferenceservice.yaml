@@ -34,4 +34,6 @@ spec:
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
-        value: NVIDIA-A10G-SHARED
+        value: "True"
+        operator: Equal
+
